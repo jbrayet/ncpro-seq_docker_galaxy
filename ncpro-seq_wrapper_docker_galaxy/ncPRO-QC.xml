@@ -1,0 +1,232 @@
+<tool id="ncPRO-QC" name="Alignment and QC">
+  <description>of sRNA-seq data</description>
+  <command interpreter="bash">ncPRO-QC.sh 
+  #for $i in $input_conditional.sampleNumber.samples
+    -i ${i.input}
+  #end for
+  #for $i in $input_conditional.sampleNumber.samples
+    -s ${i.sampleName}
+  #end for
+  -t $input_conditional.input_type
+  -n $projectName
+  -g $genome  
+  -f $Rfam
+  -l $outlog
+  -r $report
+  -h $outhtml
+  -p $outpdf
+  #if $input_conditional.input_type == "fastq"
+    -a $input_conditional.mapping
+    #if $input_conditional.sampleNumber.numberOfSample == "1"
+      -o $outbam_0
+    #end if
+    #if $input_conditional.sampleNumber.numberOfSample == "2"
+      -o $outbam_1 -o $outbam_2
+    #end if
+    #if $input_conditional.sampleNumber.numberOfSample == "3"
+      -o $outbam_3 -o $outbam_4 -o $outbam_5
+    #end if
+    #if $input_conditional.sampleNumber.numberOfSample == "4"
+      -o $outbam_6 -o $outbam_7 -o $outbam_8 -o $outbam_9
+    #end if 
+  #end if
+  </command>
+  <inputs>
+    <param name="projectName" type="text" value="Project_1" size="20" label="Give a project name" >
+      <sanitizer invalid_char="">
+	<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+      </sanitizer>
+    </param>
+    <conditional name="input_conditional">
+    	<param name="input_type" type="select" label="Select your input file format" help="Raw datafile (fastq) or aligned file (BAM) are allowed. Different treatment will be performed according to the data type.">
+		<option value="fastq" selected="true">fastq</option>
+        	<option value="bam">bam</option>
+    	</param>
+	<when value="fastq">
+	  <conditional name="sampleNumber">
+	    <param name="numberOfSample" type="select" label="Number of sample(s)">
+	      <option value="1" selected="true">1</option>
+	      <option value="2">2</option>
+	      <option value="3">3</option>
+	      <option value="4">4</option>
+	    </param>
+	  <when value="1">
+	    <repeat name="samples" title="Sample Name" min="1" max="1" default="1">
+	    <param name="sampleName" type="text" value="input" size="30" label="Name">
+	      <sanitizer invalid_char="">
+		<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+	      </sanitizer>
+	    </param> 
+	      <param name="input" type="data" format="fastq" label="Raw Input file"/>
+	    </repeat>
+	  </when>
+	  <when value="2">
+	    <repeat name="samples" title="Sample Name" min="2" max="2" default="2">
+	    <param name="sampleName" type="text" value="input" size="30" label="Name">
+	      <sanitizer invalid_char="">
+		<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+	      </sanitizer>
+	    </param> 
+	      <param name="input" type="data" format="fastq" label="Raw Input file"/>
+	    </repeat>
+	  </when>
+	  <when value="3">
+	    <repeat name="samples" title="Sample Name" min="3" max="3" default="3">
+	    <param name="sampleName" type="text" value="input" size="30" label="Name">
+	      <sanitizer invalid_char="">
+		<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+	      </sanitizer>
+	    </param> 
+	      <param name="input" type="data" format="fastq" label="Raw Input file"/>
+	    </repeat>
+	  </when>
+	  <when value="4">
+	    <repeat name="samples" title="Sample Name" min="4" max="4" default="4">
+	    <param name="sampleName" type="text" value="input" size="30" label="Name">
+	      <sanitizer invalid_char="">
+		<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+	      </sanitizer>
+	    </param> 
+	      <param name="input" type="data" format="fastq" label="Raw Input file"/>
+	    </repeat>
+	  </when>
+	  </conditional>
+	  <param name="mapping" type="boolean" value="False" truevalue="True" falsevalue="False" label="Run Alignment" help="ncPRO-seq proposes to align the reads on a reference genome using the Bowtie aligner"/>
+	</when>
+	<when value="bam">
+	  <repeat name="samples" title="Sample Name" min="1" max="4" default="1">
+	    <param name="sampleName" type="text" value="input" size="30" label="Name">
+	      <sanitizer invalid_char="">
+		<valid initial="string.letters,string.digits"><add value="_"/></valid>	
+	      </sanitizer>
+	    </param>
+    	    <param name="input" type="data" format="bam" label="Input file"/>
+	  </repeat>
+	</when>
+    </conditional>
+    <param name="genome" type="select" label="Select a reference genome">
+	<option value="mm9">mm9</option>
+        <option value="hg19">hg19</option>
+    </param>
+    <param name="Rfam" type="boolean" value="False" truevalue="True" falsevalue="False" label="Generate the annotation overview using the RFAM and RepeatMasker database (only for aligned data)" />
+    <!--<param name="Rmsk" type="boolean" value="False" truevalue="True" falsevalue="False" label="Rmsk overview" />-->
+    <param name="report" type="select" label="Select your report format" >
+      <option value="all" selected="True">html and pdf</option>
+      <option value="html">html</option>
+      <option value="pdf">pdf</option>
+    </param>
+</inputs>
+  <outputs>
+    <data format="bam" name="outbam_0" label="ncPRO mapped file">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '1'))</filter>
+    </data>
+    <data format="bam" name="outbam_1" label="ncPRO mapped file 1">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '2'))</filter>
+    </data>
+    <data format="bam" name="outbam_2" label="ncPRO mapped file 2">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '2'))</filter>
+    </data>
+    <data format="bam" name="outbam_3" label="ncPRO mapped file 1">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '3'))</filter>
+    </data>
+    <data format="bam" name="outbam_4" label="ncPRO mapped file 2">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '3'))</filter>
+    </data>
+    <data format="bam" name="outbam_5" label="ncPRO mapped file 3">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '3'))</filter>
+    </data>
+    <data format="bam" name="outbam_6" label="ncPRO mapped file 1">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '4'))</filter>
+    </data>
+    <data format="bam" name="outbam_7" label="ncPRO mapped file 2">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '4'))</filter>
+    </data>
+    <data format="bam" name="outbam_8" label="ncPRO mapped file 3">
+	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '4'))</filter>
+    </data>
+    <data format="bam" name="outbam_9" label="ncPRO mapped file 4">
+      	<filter>((input_conditional['input_type'] == 'fastq') and (input_conditional['mapping'] == True) and (input_conditional['sampleNumber']['numberOfSample'] == '4'))</filter>
+    </data>
+    <data format="html" name="outhtml" label="ncPRO html report">
+      <filter>((report == 'all') or (report == 'html'))</filter>
+    </data>
+    <data format="pdf" name="outpdf" label="ncPRO pdf report">
+      <filter>((report == 'all') or (report == 'pdf'))</filter>
+    </data>
+    <data format="txt" name="outlog" label="ncPRO log">
+    </data>
+  </outputs>
+ <help>
+
+**What ncPRO-seq does ?**
+
+------
+
+ncPRO-seq is a tool for annotation and profiling of ncRNAs from smallRNA sequencing data. It aims to interrogate and perform detailed analysis on small RNAs derived from annotated non-coding regions in miRBase, Rfam and repeatMasker, and regions defined by users. A command line version and an online version are available at http://ncpro.curie.fr.
+If you use the ncPRO-seq tool for your analysis, please cite the following paper :
+Chen C., Servant N., Toedling J., Sarazin A., Marchais A., Duvernois-Berthet E., Cognat V., Colot V., Voinnet O., Heard E., Ciaudo C. and Barillot E. (2012) ncPRO-seq: a tool for annotation and profiling analysis of ncRNAs from small RNA-seq.Bioinformatics.28(23):3147-9. 
+
+------
+
+**Input Formats**
+
+Raw datafile (fastq) or aligned file (BAM) are allowed. In all the case, ncPRO-seq will performed a quality control of your data.
+
+------
+
+**Quality Control of raw data**
+
+-Base Composition Information
+
+Display the proportion of each base position for which each of the four normal DNA bases has been called (or GC content). If you see strong biases which change in different bases then this usually indicates an overrepresented sequence which is contaminating your library. A bias which is consistent across all bases either indicates that the original library was sequence biased, or that there was a systematic problem during the sequencing of the library. 
+
+-Quality Score
+
+This view presents the quality values across all bases at each position in the FastQ file. 
+The y-axis on the graph shows the mean quality scores. The higher the score the better the base call. The quality of calls on most platforms will degrade as the run progresses, so it is common to see base calls falling into the orange area towards the end of a read. 
+We usually consider as good quality, the data with a mean quality higher than 20.
+
+-Reads Length Distribution
+
+The insert size distribution is the most important quality control in sRNA-seq data. ncPRO-seq provides two types of information, i.e. the abundant versus the distinct reads length distribution. The abundant distribution considers all reads as they are described in the fastq file. The distinct distribution merges all duplicated sequence as one. This view usually decreases the importance of miRNAs to highlight other population-based ncRNAs.
+
+------
+
+**Reads Alignment**
+
+In case of raw data, ncPRO-seq proposes to align them on a reference genome using the Bowtie aligner. A default alignment is performed to return the best read alignment with a few mismatches allowed (--best --strata -e 50 -nomaqround). Up to 20 locations for a given read are allowed (-a -m 20) in order to deal with ncRNAs repeated on the genome.
+
+------
+
+**Quality Control of aligned data**
+
+-Mapping statistics
+
+The proportions of reads with unique, multiple mapping sites in the genome, and unmapped reads is plotted. For sRNA-seq data, we usually expect to have a large proportion of unique hits.
+
+-Annotation overview
+
+The reads annotation family is the most general overview, and counts the reads based on the following annotations: coding genes, ncRNAs from Rfam, smallRNAs from repeated regions, rRNAs, piRNAs from piRBase and precursor miRNAs from miRBase. 
+
+-miRNA reads proportion (miRBase)
+
+A dedicated plot is available for pre-miRNAs. In this step, abundant reads mapped in mature miRNA regions are counted, and plotted as the proportion of all mapped reads in the genome. The annotation file of mature miRNA is generated using files from miRBase. Each miRNA count is calculated using the intersection of the reads alignment with the precursor position.
+In a classical sRNA-seq experiment, we usually expect to have a high level of miRNAs (around 70%). This information can be used as a quality control for mammals. If a small proportion of miRNAs is observed, it means that another population of ncRNA predominates. This can be real biological information, or a contamination (tRNA, rRNA, etc.)
+
+------
+
+**RFAM and RepeatMasker annotation overview**
+
+After alignment, ncPRO-seq can give a first overview of your data annotation, by overlapping the aligned read with the known annotations from the RFAM or RepeatMasker database.
+
+-ncRNA annotation (RFAM)
+
+To compare the read expression in different repeat/Rfam families, we count the number of abundant reads in each family and plot the relative proportion.
+We catalogue non-coding RNA genes in Rfam annotation into five big classes: tRNA, rRNA, snRNA, snoRNA and others. Note that miRNA annotations are excluded in the Rfam noncoding RNA analyses to be replaced by the miRBase annotation.
+
+-Repeats annotation (RepeatMasker)
+
+ncPRO-seq uses repeat annotations from RepeatMasker database. We classify different repeats based on the name of repeat family.
+
+  </help>
+</tool>

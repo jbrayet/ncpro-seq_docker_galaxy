@@ -1,0 +1,607 @@
+<tool id="ncPRO-PROFILING" name="Profiling">
+  <description>of mapped reads</description>
+  <command interpreter="bash">ncPRO-PROFILING.sh
+  -i $input 
+  -g $genome 
+  -t $cond.datatype 
+  -d $cond['database']
+  -e $cond['database']$cond['borne']$cond['N1']"_"$cond['N2']
+  -l $outlog
+  #if str($cond.datatype) == "matmir":
+	-o $out_mirna_ab
+	-p $out_mirna_dis
+  #elif str($cond.datatype) == 'trna':
+	-o $out_trna_ab
+	-p $out_trna_dis
+  #elif str($cond.datatype) == 'premir':
+	-o $out_premirna_ab
+	-p $out_premirna_dis
+  #elif str($cond.datatype) == 'rfam':
+  	-o $out_rfam_ab
+  	-p $out_rfam_dis
+  #elif str($cond.datatype) == 'rmsk':
+	-o $out_rmsk_ab
+	-p $out_rmsk_dis
+  #end if
+  </command>
+  
+  <!-- 
+  DONE :
+  	- added possibility of mapping against : trna, ncrna from rfam, repeat from rmasker
+  	
+  TODO:
+  	- possibility of adding MORE than one sub-family
+  	- check famlies arragements in configfile !
+ 
+
+  </command>
+  
+  
+  
+  -->
+  <inputs>
+    <param name="input" type="data" format="bam" label="Select your input file format" help="Aligned file (BAM) is required."/>
+    <param name="genome" type="select" label="Select a reference genome" help="All the samples have to belong to the same species."> <!-- values should be the same as annotation files names, this value goes to ORGANISM in config file-->
+		<option value="mm9"> Mouse (mm9)</option>
+		<option value="mm10"> Mouse (mm10)</option>
+        <option value="hg19"> Human (hg19)</option>
+    	<option value="rn4">Rat</option>
+    	<option value="TAIR9">A. Thaliana</option>
+    	<option value="ce6">C. Elegans</option>
+    	<option value="galGal3">Chicken</option>
+    	<option value="dm3">D. melanogaster</option>
+    	<option value="bosTau4">Cow</option>
+    	<option value="canFam2">Dog</option>
+    	<option value="equCab2">Horse</option>
+    	<option value="rheMac2">Macaca</option>
+    	<option value="monDom5">Opossum</option>
+    	<option value="ornAna1">Platypus</option>
+    	<option value="taeGut1">Zebrafinch</option>
+    	<option value="Zv9">Zebrafish</option>
+    </param>
+
+
+	
+    <conditional name="cond">
+	    <param name="datatype" type="select" label="Annotate mapped reads against the following database" help="ncPRO-seq allows to calculate the reads coverage for each feature of an annotation database.">
+			<option value="matmir">mature miRNAs from miRBase</option>
+        	<option value="premir">precursor miRNAs from miRBase</option>
+        	<option value="trna">tRNA from UCSC</option>
+        	<option value="rfam">Other ncRNAs from RFAM</option>
+        	<option value="rmsk">Repeats from RepeatMasker</option>
+        	<option value="other">Other custom annotation file</option>
+	    </param>
+
+<!--OTHER annotation files -->
+
+	    <when value="other">
+	      <param name="database" type="data" format="gff3" label="Select a file for reads annotation" help="standard gff3 format is required."/>
+
+	    <!-- this is only to make my life easier .. None of this will be used !!-->
+	    <param name="borne" type="hidden" value="," />
+	    <param name="N1" type="hidden" value="0"/>
+		<param name="N2" type="hidden" value="0"/>
+
+
+	    <!-- None of this will be used !!-->
+	    </when>
+<!--END OTHER annotation files -->
+
+
+	    <when value="matmir">
+	      <param name="database" type="select">
+			<option value="miRNA">miRNA</option>
+	      </param>
+	      
+<!-- mature mi RNA : NO repeats in annotation !-->
+
+			<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
+					<option value="_e_">Extend the annotation</option>
+					<option value="_i_">Shorten the annotation</option>
+					<option value="_s_">Focus on the 5' end</option>
+					<option value="_t_">Focus on the 3' end</option>
+
+					
+			</param>
+		  	<param name="N1" type="text" size="4" value="+0" label="From">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+		  	<param name="N2" type="text" size="4" value="+0" label="To">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+	    </when>
+
+
+<!-- PRE miRNA : NO repeats in annotation  -->	    
+	    <when value="premir">
+	      <param name="database" type="select">
+				<option value="miRNA">miRNA</option>
+	      </param>
+	    
+		<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
+					<option value="_e_">Extend the annotation</option>
+					<option value="_i_">Shorten the annotation</option>
+					<option value="_s_">Focus on the 5' end</option>
+					<option value="_t_">Focus on the 3' end</option>
+					
+			</param>
+		  	<param name="N1" type="text" size="4" value="+0" label="From">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+		  	<param name="N2" type="text" size="4" value="+0" label="To">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+	    </when>
+
+	    
+<!-- TRNA : NO repeats in annotation  -->	    	    
+	    <when value="trna">
+	      <param name="database" type="select">
+		<option value="tRNA">tRNA</option>
+	     </param>
+			<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
+					<option value="_e_">Extend the annotation</option>
+					<option value="_i_">Shorten the annotation</option>
+					<option value="_s_">Focus on the 5' end</option>
+					<option value="_t_">Focus on the 3' end</option>
+			</param>
+		  	<param name="N1" type="text" size="4" value="+0" label="From">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+		  	<param name="N2" type="text" size="4" value="+0" label="To">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+	    </when>
+
+	     
+
+<!-- RFAM -->	    	    	    
+	    <when value="rfam">
+	      <param name="database" type="select" label="Select a sub-family to focus on"> <!-- sub-families are listed in annotation/rfam_items.txt-->
+		<option value="5_8S_rRNA">5_8S_rRNA</option>
+		<option value="5S_rRNA">5S_rRNA</option>
+		<option value="7SK">7SK</option>
+		<option value="ACA64">ACA64</option>
+		<option value="Antizyme_FSE">Antizyme_FSE</option>
+		<option value="CAESAR">CAESAR</option>
+		<option value="CPEB3_ribozyme">CPEB3_ribozyme</option>
+		<option value="Gammaretro_CES">Gammaretro_CES</option>
+		<option value="G-CSF_SLDE">G-CSF_SLDE</option>
+		<option value="GP_knot1">GP_knot1</option>
+		<option value="GRIK4_3p_UTR">GRIK4_3p_UTR</option>
+		<option value="Histone3">Histone3</option>
+		<option value="IRE">IRE</option>
+		<option value="IRES_Bag1">IRES_Bag1</option>
+		<option value="IRES_Bip">IRES_Bip</option>
+		<option value="IRES_c-myc">IRES_c-myc</option>
+		<option value="IRES_c-sis">IRES_c-sis</option>
+		<option value="IRES_Cx32">IRES_Cx32</option>
+		<option value="IRES_Cx43">IRES_Cx43</option>
+		<option value="IRES_FGF1">IRES_FGF1</option>
+		<option value="IRES_HIF1">IRES_HIF1</option>
+		<option value="IRES_IGF2">IRES_IGF2</option>
+		<option value="IRES_Kv1_4">IRES_Kv1_4</option>
+		<option value="IRES_L-myc">IRES_L-myc</option>
+		<option value="IRES_mnt">IRES_mnt</option>
+		<option value="IRES_n-myc">IRES_n-myc</option>
+		<option value="IRES_TrkB">IRES_TrkB</option>
+		<option value="IRES_VEGF_A">IRES_VEGF_A</option>
+		<option value="K_chan_RES">K_chan_RES</option>
+		<option value="let-7">let-7</option>
+		<option value="lin-4">lin-4</option>
+		<option value="NRON">NRON</option>
+		<option value="p27_CRE">p27_CRE</option>
+		<option value="Prion_pknot">Prion_pknot</option>
+		<option value="REN-SRE">REN-SRE</option>
+		<option value="RF_site4">RF_site4</option>
+		<option value="RF_site5">RF_site5</option>
+		<option value="RF_site9">RF_site9</option>
+		<option value="RNase_MRP">RNase_MRP</option>
+		<option value="RNaseP_nuc">RNaseP_nuc</option>
+		<option value="SCARNA1">SCARNA1</option>
+		<option value="SCARNA11">SCARNA11</option>
+		<option value="SCARNA13">SCARNA13</option>
+		<option value="SCARNA14">SCARNA14</option>
+		<option value="SCARNA15">SCARNA15</option>
+		<option value="SCARNA16">SCARNA16</option>
+		<option value="SCARNA17">SCARNA17</option>
+		<option value="SCARNA18">SCARNA18</option>
+		<option value="SCARNA20">SCARNA20</option>
+		<option value="SCARNA21">SCARNA21</option>
+		<option value="SCARNA23">SCARNA23</option>
+		<option value="SCARNA24">SCARNA24</option>
+		<option value="SCARNA3">SCARNA3</option>
+		<option value="SCARNA4">SCARNA4</option>
+		<option value="SCARNA6">SCARNA6</option>
+		<option value="SCARNA8">SCARNA8</option>
+		<option value="SECIS">SECIS</option>
+		<option value="snoMBII-202">snoMBII-202</option>
+		<option value="snoR38">snoR38</option>
+		<option value="SNORA1">SNORA1</option>
+		<option value="SNORA11">SNORA11</option>
+		<option value="SNORA12">SNORA12</option>
+		<option value="SNORA13">SNORA13</option>
+		<option value="SNORA14">SNORA14</option>
+		<option value="SNORA15">SNORA15</option>
+		<option value="SNORA16">SNORA16</option>
+		<option value="SNORA17">SNORA17</option>
+		<option value="SNORA18">SNORA18</option>
+		<option value="SNORA19">SNORA19</option>
+		<option value="SNORA2">SNORA2</option>
+		<option value="SNORA20">SNORA20</option>
+		<option value="SNORA21">SNORA21</option>
+		<option value="SNORA22">SNORA22</option>
+		<option value="SNORA23">SNORA23</option>
+		<option value="SNORA24">SNORA24</option>
+		<option value="SNORA25">SNORA25</option>
+		<option value="SNORA26">SNORA26</option>
+		<option value="SNORA27">SNORA27</option>
+		<option value="SNORA28">SNORA28</option>
+		<option value="SNORA29">SNORA29</option>
+		<option value="SNORA3">SNORA3</option>
+		<option value="SNORA30">SNORA30</option>
+		<option value="SNORA31">SNORA31</option>
+		<option value="SNORA32">SNORA32</option>
+		<option value="SNORA33">SNORA33</option>
+		<option value="SNORA35">SNORA35</option>
+		<option value="SNORA36">SNORA36</option>
+		<option value="SNORA38">SNORA38</option>
+		<option value="SNORA4">SNORA4</option>
+		<option value="SNORA40">SNORA40</option>
+		<option value="SNORA41">SNORA41</option>
+		<option value="SNORA42">SNORA42</option>
+		<option value="SNORA43">SNORA43</option>
+		<option value="SNORA44">SNORA44</option>
+		<option value="SNORA46">SNORA46</option>
+		<option value="SNORA47">SNORA47</option>
+		<option value="SNORA48">SNORA48</option>
+		<option value="SNORA49">SNORA49</option>
+		<option value="SNORA5">SNORA5</option>
+		<option value="SNORA50">SNORA50</option>
+		<option value="SNORA51">SNORA51</option>
+		<option value="SNORA52">SNORA52</option>
+		<option value="SNORA53">SNORA53</option>
+		<option value="SNORA54">SNORA54</option>
+		<option value="SNORA55">SNORA55</option>
+		<option value="SNORA57">SNORA57</option>
+		<option value="SNORA58">SNORA58</option>
+		<option value="SNORA61">SNORA61</option>
+		<option value="SNORA62">SNORA62</option>
+		<option value="SNORA63">SNORA63</option>
+		<option value="SNORA64">SNORA64</option>
+		<option value="SNORA65">SNORA65</option>
+		<option value="SNORA66">SNORA66</option>
+		<option value="SNORA67">SNORA67</option>
+		<option value="SNORA68">SNORA68</option>
+		<option value="SNORA69">SNORA69</option>
+		<option value="SNORA7">SNORA7</option>
+		<option value="SNORA70">SNORA70</option>
+		<option value="SNORA71">SNORA71</option>
+		<option value="SNORA72">SNORA72</option>
+		<option value="SNORA73">SNORA73</option>
+		<option value="SNORA74">SNORA74</option>
+		<option value="SNORA75">SNORA75</option>
+		<option value="SNORA76">SNORA76</option>
+		<option value="SNORA77">SNORA77</option>
+		<option value="SNORA79">SNORA79</option>
+		<option value="SNORA8">SNORA8</option>
+		<option value="SNORA81">SNORA81</option>
+		<option value="SNORA84">SNORA84</option>
+		<option value="SNORA9">SNORA9</option>
+		<option value="SNORD100">SNORD100</option>
+		<option value="SNORD101">SNORD101</option>
+		<option value="SNORD102">SNORD102</option>
+		<option value="SNORD103">SNORD103</option>
+		<option value="SNORD105">SNORD105</option>
+		<option value="SNORD107">SNORD107</option>
+		<option value="SNORD11">SNORD11</option>
+		<option value="SNORD110">SNORD110</option>
+		<option value="SNORD111">SNORD111</option>
+		<option value="SNORD113">SNORD113</option>
+		<option value="SNORD115">SNORD115</option>
+		<option value="SNORD116">SNORD116</option>
+		<option value="SNORD11B">SNORD11B</option>
+		<option value="SNORD12">SNORD12</option>
+		<option value="SNORD121A">SNORD121A</option>
+		<option value="SNORD123">SNORD123</option>
+		<option value="SNORD124">SNORD124</option>
+		<option value="SNORD125">SNORD125</option>
+		<option value="SNORD127">SNORD127</option>
+		<option value="SNORD14">SNORD14</option>
+		<option value="SNORD15">SNORD15</option>
+		<option value="SNORD16">SNORD16</option>
+		<option value="SNORD17">SNORD17</option>
+		<option value="SNORD18">SNORD18</option>
+		<option value="SNORD19">SNORD19</option>
+		<option value="SNORD19B">SNORD19B</option>
+		<option value="SNORD20">SNORD20</option>
+		<option value="SNORD21">SNORD21</option>
+		<option value="SNORD22">SNORD22</option>
+		<option value="SNORD23">SNORD23</option>
+		<option value="SNORD24">SNORD24</option>
+		<option value="SNORD25">SNORD25</option>
+		<option value="SNORD26">SNORD26</option>
+		<option value="SNORD27">SNORD27</option>
+		<option value="SNORD28">SNORD28</option>
+		<option value="SNORD29">SNORD29</option>
+		<option value="SNORD30">SNORD30</option>
+		<option value="SNORD31">SNORD31</option>
+		<option value="SNORD33">SNORD33</option>
+		<option value="SNORD34">SNORD34</option>
+		<option value="SNORD35">SNORD35</option>
+		<option value="SNORD36">SNORD36</option>
+		<option value="SNORD37">SNORD37</option>
+		<option value="SNORD38">SNORD38</option>
+		<option value="SNORD41">SNORD41</option>
+		<option value="SNORD42">SNORD42</option>
+		<option value="SNORD43">SNORD43</option>
+		<option value="SNORD45">SNORD45</option>
+		<option value="SNORD46">SNORD46</option>
+		<option value="SNORD47">SNORD47</option>
+		<option value="SNORD48">SNORD48</option>
+		<option value="SNORD49">SNORD49</option>
+		<option value="SNORD5">SNORD5</option>
+		<option value="SNORD50">SNORD50</option>
+		<option value="SNORD51">SNORD51</option>
+		<option value="SNORD52">SNORD52</option>
+		<option value="SNORD53">SNORD53</option>
+		<option value="SNORD55">SNORD55</option>
+		<option value="SNORD56">SNORD56</option>
+		<option value="SNORD57">SNORD57</option>
+		<option value="SNORD58">SNORD58</option>
+		<option value="SNORD59">SNORD59</option>
+		<option value="SNORD60">SNORD60</option>
+		<option value="SNORD61">SNORD61</option>
+		<option value="SNORD62">SNORD62</option>
+		<option value="SNORD63">SNORD63</option>
+		<option value="SNORD64">SNORD64</option>
+		<option value="SNORD65">SNORD65</option>
+		<option value="SNORD66">SNORD66</option>
+		<option value="SNORD67">SNORD67</option>
+		<option value="SNORD69">SNORD69</option>
+		<option value="SNORD70">SNORD70</option>
+		<option value="SNORD71">SNORD71</option>
+		<option value="SNORD72">SNORD72</option>
+		<option value="SNORD73">SNORD73</option>
+		<option value="SNORD74">SNORD74</option>
+		<option value="SNORD75">SNORD75</option>
+		<option value="SNORD78">SNORD78</option>
+		<option value="SNORD79">SNORD79</option>
+		<option value="SNORD81">SNORD81</option>
+		<option value="SNORD82">SNORD82</option>
+		<option value="SNORD83">SNORD83</option>
+		<option value="SNORD86">SNORD86</option>
+		<option value="SNORD87">SNORD87</option>
+		<option value="SNORD88">SNORD88</option>
+		<option value="SNORD89">SNORD89</option>
+		<option value="SNORD90">SNORD90</option>
+		<option value="SNORD91">SNORD91</option>
+		<option value="SNORD92">SNORD92</option>
+		<option value="SNORD93">SNORD93</option>
+		<option value="SNORD94">SNORD94</option>
+		<option value="SNORD95">SNORD95</option>
+		<option value="SNORD96">SNORD96</option>
+		<option value="SNORD98">SNORD98</option>
+		<option value="SNORD99">SNORD99</option>
+		<option value="SNORND104">SNORND104</option>
+		<option value="snosnR60_Z15">snosnR60_Z15</option>
+		<option value="snoU105B">snoU105B</option>
+		<option value="snoU109">snoU109</option>
+		<option value="snoU13">snoU13</option>
+		<option value="snoU2_19">snoU2_19</option>
+		<option value="snoU2-25">snoU2-25</option>
+		<option value="snoU2-30">snoU2-30</option>
+		<option value="snoU54">snoU54</option>
+		<option value="snoU6-53">snoU6-53</option>
+		<option value="snoU6-77">snoU6-77</option>
+		<option value="snoU82P">snoU82P</option>
+		<option value="snoU83B">snoU83B</option>
+		<option value="snoU85">snoU85</option>
+		<option value="snoU89">snoU89</option>
+		<option value="snoU90">snoU90</option>
+		<option value="snoU97">snoU97</option>
+		<option value="snoZ17">snoZ17</option>
+		<option value="snoZ30">snoZ30</option>
+		<option value="snoZ39">snoZ39</option>
+		<option value="snoZ40">snoZ40</option>
+		<option value="snR39B">snR39B</option>
+		<option value="Spi-1">Spi-1</option>
+		<option value="SSU_rRNA_5">SSU_rRNA_5</option>
+		<option value="Telomerase-vert">Telomerase-vert</option>
+		<option value="tRNA">tRNA</option>
+		<option value="U1">U1</option>
+		<option value="U11">U11</option>
+		<option value="U12">U12</option>
+		<option value="U1A_PIE">U1A_PIE</option>
+		<option value="U2">U2</option>
+		<option value="U3">U3</option>
+		<option value="U4">U4</option>
+		<option value="U4atac">U4atac</option>
+		<option value="U5">U5</option>
+		<option value="U6">U6</option>
+		<option value="U6atac">U6atac</option>
+		<option value="U7">U7</option>
+		<option value="U8">U8</option>
+		<option value="Vault">Vault</option>
+		<option value="Vimentin3">Vimentin3</option>
+		<option value="Y_RNA">Y_RNA</option>
+	      </param>
+	    
+	    
+	    <param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
+					<option value="_e_">Extend the annotation</option>
+					<option value="_i_">Shorten the annotation</option>
+					<option value="_s_">Focus on the 5' end</option>
+					<option value="_t_">Focus on the 3' end</option>
+			</param>
+		  	<param name="N1" type="text" size="4" value="+0" label="From">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+		  	<param name="N2" type="text" size="4" value="+0" label="To">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+
+	    </when>
+
+<!-- sub-families are listed in annotation/rmsk_items.txt -->	    
+	    <when value="rmsk">
+	      <param name="database" type="select" label="Select a sub-family to focus on:"> 
+		<option value="AcHobo">AcHobo</option>
+		<option value="Alu">Alu</option>
+		<option value="B2">B2</option>
+		<option value="B4">B4</option>
+		<option value="centr">centr</option>
+		<option value="Charlie">Charlie</option>
+		<option value="CR1">CR1</option>
+		<option value="DNA">DNA</option>
+		<option value="ERV">ERV</option>
+		<option value="ERV1">ERV1</option>
+		<option value="ERVK">ERVK</option>
+		<option value="ERVL">ERVL</option>
+		<option value="Gypsy">Gypsy</option>
+		<option value="hAT">hAT</option>
+		<option value="Helitron">Helitron</option>
+		<option value="ID">ID</option>
+		<option value="IAP">IAP</option>
+		<option value="L1">L1</option>
+		<option value="L1Md_T">L1Md_T</option>
+		<option value="L1Md_Gf">L1Md_Gf</option>
+		<option value="L1Md_A">L1Md_A</option>
+		<option value="L2">L2</option>
+		<option value="Low_complexity">Low_complexity</option>
+		<option value="LTR">LTR</option>
+		<option value="MaLR">MaLR</option>
+		<option value="Mariner">Mariner</option>
+		<option value="MER1_type">MER1_type</option>
+		<option value="MER2_type">MER2_type</option>
+		<option value="MIR">MIR</option>
+		<option value="MuDR">MuDR</option>
+		<option value="PiggyBac">PiggyBac</option>
+		<option value="rRNA">rRNA</option>
+		<option value="RTE">RTE</option>
+		<option value="Satellite">Satellite</option>
+		<option value="scRNA">scRNA</option>
+		<option value="Simple_repeat">Simple_repeat</option>
+		<option value="SINE">SINE</option>
+		<option value="snRNA">snRNA</option>
+		<option value="srpRNA">srpRNA</option>
+		<option value="Tc2">Tc2</option>
+		<option value="TcMar">TcMar</option>
+		<option value="Tigger">Tigger</option>
+		<option value="Tip100">Tip100</option>
+		<option value="tRNA">tRNA</option>
+	      </param>
+	      
+	    
+	    <param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
+					<option value="_e_">Extend the annotation</option>
+					<option value="_i_">Shorten the annotation</option>
+					<option value="_s_">Focus on the 5' end</option>
+					<option value="_t_">Focus on the 3' end</option>
+			</param>
+		  	<param name="N1" type="text" size="4" value="+0" label="From">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+		  	<param name="N2" type="text" size="4" value="+0" label="To">
+				<help>Fill this field with +/- value</help>
+		  	</param>
+
+
+	   	</when>
+    </conditional>
+
+
+   <!-- <param name="rpm" type="boolean" value="False" truevalue="True" falsevalue="False" label="Reads Per Million (RPM) normalization of reads counts" /> -->s
+ 
+<!-- ### comment out kdi section  
+    <param name="kdi_file_name" type="text" size="20" label="File name (without extension)">
+      <validator type="empty_field" message="You must specify a File name" />
+    </param>
+    <param name="kdi_output_dir" type="text" size="13" label="Project number">
+      <validator type="empty_field" message="You must specify a Project number" />
+    </param>
+-->
+
+</inputs>
+
+<outputs>
+    <data format="png" name="out_mirna_ab" label="miRNA profiling (abundant reads)"> 
+	<filter>(str(cond['datatype']) == "matmir")</filter>
+    </data>
+    <data format="png" name="out_mirna_dis" label="miRNA profiling (distinct reads)"> 
+	<filter>(str(cond['datatype']) == "matmir")</filter>
+    </data>
+    
+   
+    <data format="png" name="out_premirna_ab" label="premiRNA profiling (abundant reads)">
+		<filter>(str(cond['datatype']) == "premir")</filter>
+    </data>
+    <data format="png" name="out_premirna_dis" label="premiRNA profiling (distinct reads)">
+		<filter>(str(cond['datatype']) == "premir")</filter>
+    </data>
+   
+    <data format="png" name="out_trna_ab" label="tRNA profiling (abundant reads)">
+		<filter>(str(cond['datatype']) == "trna")</filter>
+    </data>
+    <data format="png" name="out_trna_dis" label="tRNA profiling (distinct reads) ">
+		<filter>(str(cond['datatype']) == "trna")</filter>
+    </data>
+   
+    <data format="png" name="out_rfam_ab" label="ncRNA profiling (abundant reads)">
+		<filter>(str(cond['datatype']) == "rfam")</filter>
+    </data>
+   	<data format="png" name="out_rfam_dis" label="ncRNA profiling (distinct reads)">
+		<filter>(str(cond['datatype']) == "rfam")</filter>
+    </data>
+   
+   
+    <data format="png" name="out_rmsk_ab" label="repeats profiling (abundant reads)">
+		<filter>(str(cond['datatype']) == "rmsk")</filter>
+    </data>
+    <data format="png" name="out_rmsk_dis" label="repeats profiling (distinct reads)">
+		<filter>(str(cond['datatype']) == "rmsk")</filter>
+    </data>
+   
+    <data format="txt" name="outlog" label="ncPRO log">
+    </data>
+  </outputs>
+ <help>
+
+**What ncPRO-seq does ?**
+
+------
+
+ncPRO-seq is a tool for annotation and profiling of ncRNAs from smallRNA sequencing data. It aims to interrogate and perform detailed analysis on small RNAs derived from annotated non-coding regions in miRBase, Rfam and repeatMasker, and regions defined by users. A command line version and an online version are available at http://ncpro.curie.fr.
+If you use the ncPRO-seq tool for your analysis, please cite the following paper :
+Chen C., Servant N., Toedling J., Sarazin A., Marchais A., Duvernois-Berthet E., Cognat V., Colot V., Voinnet O., Heard E., Ciaudo C. and Barillot E. (2012) ncPRO-seq: a tool for annotation and profiling analysis of ncRNAs from small RNA-seq.Bioinformatics.28(23):3147-9. 
+
+------
+
+**Input Formats**
+
+Aligned file (BAM) is allowed. See ncPRO-seq Alignment and quality control for more details.
+
+------
+
+**Profiling**
+
+Read profiling refers to the analysis of read profiles, which are represented by the distribution of positional read coverage and the read length distribution in annotation families. For a given annotation family, ncPRO-seq will compute and plot two types of read profiles by using abundant and distinct reads. (Note that distinct reads are read groups that only count once for reads with he same sequence, whereas abudant reads are all sequenced reads.)
+
+-Reads with multiple mapping sites
+A major challenging problem using NGS sequencing data is the annotation of reads aligned at multiple
+locations. Most of the available frameworks resolve this situation by discarding these reads or by
+providing random annotations. Here, we propose to keep all the reads aligned to the genome, and to
+weight them by the number of mapping sites. Suppose a read can be aligned 5 times to the genome,
+for each mapping site, the read would be counted as 0.2, i.e. 1/5.
+
+-Annotation
+There are four types of extended items which can be used to modify coordinates.
+1- shorten [+-]N1 bp at 5' end, [+-]N2 bp at 3' end
+2- extend [+-]N1 bp at 5' end, [+-]N2 bp at 3' end
+3- get coordinates for sub-region from position N1 to N2 indexed from 5' end
+4- get coordinates for sub-region from position N1 to N2 indexed from 3' end
+
+For instance, due to the inaccurate processing of precursor miRNAs by Dicer or downstream miRNA remodelling, mature miRNAs often have end heterogeneities comparing to their annotations in miRBase. Thus, when analyzing mature miRNAs, it is necessary to extend miRNA annotation several bases (e.g. 2 bases) in both upstream and downstream region.
+
+  </help>
+</tool>
