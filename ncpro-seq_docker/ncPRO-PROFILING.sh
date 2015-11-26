@@ -42,7 +42,7 @@ fi
 
 #Deploy ncPRO directories structure
 
-/bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
 
 #me
 chmod 777 -R $OUTPUT_PATH

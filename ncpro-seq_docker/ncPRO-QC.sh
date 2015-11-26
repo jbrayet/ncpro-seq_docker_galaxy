@@ -23,6 +23,22 @@ a) ALIGNMENT="$OPTARG";;
 esac
 done
 
+##### ncPRO-seq annotation - Galaxy #####
+
+GENOME_2=`echo $GENOME | cut -d"_" -f2`
+
+databasePath=$(find / -type d -name database)
+
+mkdir -p $databasePath/ncproseqAnnotation
+mkdir -p $databasePath/ncproseqAnnotation/annotation
+annotationPath=$databasePath/ncproseqAnnotation/annotation
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://sourceforge.net/projects/ncproseq/files/annotation/$GENOME.tar.gz -P $annotationPath
+cd $annotationPath; tar -zxf $GENOME.tar.gz
+cd $annotationPath; rm -rf $GENOME.tar.gz
+
+#########
+
+
 sampleArray=(${INPUT//,/ })
 nameArray=(${SAMPLENAME//,/ })
 bamArray=(${BAM_OUT//,/ })
@@ -60,12 +76,12 @@ fi
 
 #Deploy ncPRO directories structure
 
-/bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
 
 echo "$INPUT" >> $DEBUG
 echo "$SAMPLENAME" >> $DEBUG
 echo "$PROJECTNAME" >> $DEBUG
-echo "$GENOME" >> $DEBUG
+echo "$GENOME_2" >> $DEBUG
 echo "$RMSK" >> $DEBUG
 echo "$BAM_OUT" >> $DEBUG
 echo "$RFAM" >> $DEBUG
@@ -86,7 +102,10 @@ cd $OUTPUT_PATH
 
 rm annotation
 
-ln -s /bioinfo/local/curie/ngs-data-analysis/annotation .
+cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
+cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
+
+ln -s $annotationPath .
 
 rm manuals
 
@@ -115,15 +134,29 @@ if [[ $INPUT_TYPE == "bam" ]];then
         done	
 fi
 
-#Edit config-ncrna.txt 
+#Edit config-ncrna.txt ##### A REFAIRE ####
 CONFIG_FILE=config-ncrna.txt
+
 sed -i "s/mm9/$GENOME/g" $CONFIG_FILE
 sed -i "s/hg19/$GENOME/g" $CONFIG_FILE
-
 sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
-
 sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
 
+
+for file in $annotationPath/$GENOME_2/*.gff
+do
+    if [[ $file == "cluster_pirna.gff"]]; then
+        ANNO_CATALOG= $annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff 
+    else 
+        if [[ $file == "pirna.gff"]]; then
+            ANNO_CATALOG= $annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff 
+        else
+            ANNO_CATALOG= $annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff 
+        fi
+    fi
+done
+
+sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
 
 #Build command line 
 
@@ -381,7 +414,7 @@ function createHtmlReport
 if [[ $REPORT == "all" ]];then
 
     
-    /bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-seq $COMMAND_LINE -s html_builder -s pdf_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE -s html_builder -s pdf_builder>> $DEBUG
 
     createHtmlReport
 
@@ -392,7 +425,7 @@ fi
 if [[ $REPORT == "pdf" ]];then
 
 
-    /bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-seq $COMMAND_LINE  -s pdf_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE  -s pdf_builder>> $DEBUG
 
     cp ${OUTPUT_PATH}/Analysis_report_ncPRO-seq.pdf $PDF_REPORT
 
@@ -402,7 +435,7 @@ fi
 if [[ $REPORT == "html" ]];then
 
 
-    /bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-seq $COMMAND_LINE -s html_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE -s html_builder>> $DEBUG
 
     createHtmlReport
 
@@ -417,7 +450,7 @@ if [[ $ALIGNMENT == "True" ]];then
     count=0
     for i in ${bamArray[*]}
     do
-        cp ${OUTPUT_PATH}/bowtie_results/${nameArray[count]/_/.}_$GENOME.bam $i 
+        cp ${OUTPUT_PATH}/bowtie_results/${nameArray[count]/_/.}_$GENOME_2.bam $i 
         count=$(( $count + 1 ))
     done
 fi
