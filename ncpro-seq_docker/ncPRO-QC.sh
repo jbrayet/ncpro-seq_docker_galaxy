@@ -32,9 +32,7 @@ databasePath=$(find / -type d -name files | grep database)
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
-[ ! -d $annotationPath/$GENOME_2 ] && wget http://sourceforge.net/projects/ncproseq/files/annotation/$GENOME.tar.gz -P $annotationPath
-cd $annotationPath; tar -zxf $GENOME.tar.gz
-cd $annotationPath; rm -rf $GENOME.tar.gz
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://sourceforge.net/projects/ncproseq/files/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath; tar -zxf $GENOME.tar.gz && cd $annotationPath; rm -rf $GENOME.tar.gz
 
 #########
 
@@ -98,14 +96,14 @@ echo "$bamArray" >> $DEBUG
 
 #Go to working directory
 
+cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
+cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
+
 cd $OUTPUT_PATH
 
 rm annotation
 
-cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
-cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
-
-ln -s $annotationPath .
+ln -s $annotationPath annotation
 
 rm manuals
 
@@ -142,21 +140,17 @@ sed -i "s/hg19/$GENOME/g" $CONFIG_FILE
 sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
 sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
 
-
-for file in $($annotationPath/$GENOME_2/*.gff);
-do
-    if [[ $file == "cluster_pirna.gff"]]
+if [[ ! -z "ls $annotationPath/$GENOME_2/*.gff | grep cluster_pirna.gff" ]]
+then
+    ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
+else
+    if [[ ! -z "ls $annotationPath/$GENOME_2/*.gff | grep pirna.gff" ]]
     then
-        ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
-    else 
-        if [[ $file == "pirna.gff"]]
-        then
-            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
-        else
-            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
-        fi
+        ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
+    else
+    ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
     fi
-done
+fi
 
 sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
 
