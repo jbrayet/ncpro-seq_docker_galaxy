@@ -27,7 +27,7 @@ done
 
 GENOME_2=`echo $GENOME | cut -d"_" -f2`
 
-databasePath=$(find / -type d -name database)
+databasePath=$(find / -type d -name files)
 
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
