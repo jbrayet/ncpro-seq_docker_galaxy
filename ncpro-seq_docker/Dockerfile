@@ -74,12 +74,3 @@ RUN cd /usr/bin/Imaging-1.1.7; python setup.py install --user
 
 RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncproseq_v1.6.3/config-system.txt
 
-##### Galaxy ####
-
-RUN wget https://github.com/jbrayet/ncpro-seq_docker_galaxy/raw/master/ncpro-seq_docker/ncPRO-QC.sh -P /usr/bin/curie_ngs
-RUN wget https://github.com/jbrayet/ncpro-seq_docker_galaxy/raw/master/ncpro-seq_docker/ncPRO-ANNOTATION.sh -P /usr/bin/curie_ngs
-RUN wget https://github.com/jbrayet/ncpro-seq_docker_galaxy/raw/master/ncpro-seq_docker/ncPRO-PROFILING.sh -P /usr/bin/curie_ngs
-
-WORKDIR /usr/bin/curie_ngs
-
-
