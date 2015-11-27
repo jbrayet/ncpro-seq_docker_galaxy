@@ -32,7 +32,7 @@ databasePath=$(find / -type d -name files | grep database)
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
-[ ! -d $annotationPath/$GENOME_2 ] && wget http://sourceforge.net/projects/ncproseq/files/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath; tar -zxf $GENOME.tar.gz && cd $annotationPath; rm -rf $GENOME.tar.gz
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://sourceforge.net/projects/ncproseq/files/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
 
 #########
 
@@ -135,8 +135,9 @@ fi
 #Edit config-ncrna.txt ##### A REFAIRE ####
 CONFIG_FILE=config-ncrna.txt
 
-sed -i "s/mm9/$GENOME/g" $CONFIG_FILE
-sed -i "s/hg19/$GENOME/g" $CONFIG_FILE
+sed -i "s:^BOWTIE_GENOME_REFERENCE.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
+sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
+
 sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
 sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
 
