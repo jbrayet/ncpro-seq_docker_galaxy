@@ -145,13 +145,15 @@ sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
 
 for file in $($annotationPath/$GENOME_2/*.gff);
 do
-    if [[ $file == "cluster_pirna.gff"]]; then
-        ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    if [[ $file == "cluster_pirna.gff"]]
+    then
+        ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
     else 
-        if [[ $file == "pirna.gff"]]; then
-            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+        if [[ $file == "pirna.gff"]]
+        then
+            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
         else
-            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+            ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff";
         fi
     fi
 done
