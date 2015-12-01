@@ -50,7 +50,7 @@ RUN make
 
 RUN ln -s /usr/bin/R-3.1.0/bin/R /usr/bin/R
 
-RUN wget http://sourceforge.net/projects/ncproseq/files/docker/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz -P /usr/bin
+RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/docker/ncPRO-seq.v1.6.3_Docker_galaxy.tar -P /usr/bin
 RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz -C /usr/bin/
 RUN rm -rf /usr/bin/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz
 

@@ -3,7 +3,7 @@
 # I added the 'me' lines 
 #assumption : a user can't begin with a fastq  file already grouped !
 
-while getopts "i:s:n:g:m:o:f:r:h:p:l:t:a:" optionName; do
+while getopts "i:s:n:g:m:o:f:r:h:p:l:t:a:q:" optionName; do
 case "$optionName" in
 
 i) INPUT+="$OPTARG,";;
@@ -19,6 +19,7 @@ p) PDF_REPORT="$OPTARG";;
 l) LOG_FILE="$OPTARG";;
 t) INPUT_TYPE="$OPTARG";;
 a) ALIGNMENT="$OPTARG";;
+q) FASTQ_FORMAT+="$OPTARG,";;
 
 esac
 done
@@ -99,6 +100,11 @@ echo "$bamArray" >> $DEBUG
 cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
 cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
 
+mkdir -p $databasePath/ncproseqBowtieIndexes
+cd /usr/curie_ngs
+rm -rf bowtie_indexes
+ln -s $databasePath/ncproseqBowtieIndexes bowtie_indexes
+
 cd $OUTPUT_PATH
 
 rm annotation
@@ -135,21 +141,23 @@ fi
 #Edit config-ncrna.txt ##### A REFAIRE ####
 CONFIG_FILE=config-ncrna.txt
 
-sed -i "s:^BOWTIE_GENOME_REFERENCE.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
+sed -i "s:^BOWTIE_GENOME_REFERENCE =.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
 sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
 
 sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
 sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
+sed -i "s:^FASTQ_FORMAT =.*$:FASTQ_FORMAT = $FASTQ_FORMAT:g" $CONFIG_FILE
 
-if [[ ! -z "ls $annotationPath/$GENOME_2/*.gff | grep cluster_pirna.gff" ]]
+
+if [[ -f "$annotationPath/$GENOME_2/cluster_pirna.gff" ]]
 then
     ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
 else
-    if [[ ! -z "ls $annotationPath/$GENOME_2/*.gff | grep pirna.gff" ]]
+    if [[ -f "$annotationPath/$GENOME_2/pirna.gff" ]]
     then
-        ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+        ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
     else
-    ANNO_CATALOG= "$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
     fi
 fi
 
