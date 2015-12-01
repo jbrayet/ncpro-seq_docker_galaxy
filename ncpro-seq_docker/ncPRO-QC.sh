@@ -100,7 +100,11 @@ echo "$bamArray" >> $DEBUG
 cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
 cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
 
-mkdir -p $databasePath/ncproseqBowtieIndexes
+if [[ ! -f "$databasePath/ncproseqBowtieIndexes" ]]
+then
+    mkdir -p $databasePath/ncproseqBowtieIndexes
+fi
+
 cd /usr/curie_ngs
 rm -rf bowtie_indexes
 ln -s $databasePath/ncproseqBowtieIndexes bowtie_indexes
