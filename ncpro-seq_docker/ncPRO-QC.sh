@@ -33,7 +33,7 @@ databasePath=$(find / -type d -name files | grep database)
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
-[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
+[ ! -d $annotationPath/$GENOME_2 ] && curl http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
 
 #########
 
