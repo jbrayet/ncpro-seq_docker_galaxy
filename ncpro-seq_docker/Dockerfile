@@ -23,6 +23,7 @@ MAINTAINER Jocelyn Brayet <jocelyn.brayet@curie.fr>
 
 RUN apt-get update && apt-get install -y \
     wget \
+    curl \
     gfortran \
     zlib1g-dev \
     libncurses-dev \
