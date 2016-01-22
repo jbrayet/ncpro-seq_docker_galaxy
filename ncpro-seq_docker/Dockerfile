@@ -41,10 +41,10 @@ RUN rm -rf /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz
 RUN mkdir /usr/curie_ngs/
 RUN mkdir /usr/curie_ngs/bowtie_indexes/
 
-WORKDIR /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz
+WORKDIR /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy
 RUN service apache2 start && make install < answers.txt
 
-RUN /usr/curie_ngs/ncPRO-seq.v1.6.5_Docker_galaxy/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
+RUN /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib
 RUN ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib
