@@ -55,7 +55,7 @@ fi
 
 #Deploy ncPRO directories structure
 
-/usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
 
 #me
 chmod 777 -R $OUTPUT_PATH
@@ -66,8 +66,10 @@ cd $OUTPUT_PATH
 #Create symbolic link to input and annotations
 
 ln -s $INPUT ${OUTPUT_PATH}/rawdata/input.bam
+
 rm annotation
-ln -s /bioinfo/local/curie/ngs-data-analysis/annotation .
+
+ln -s $annotationPath annotation
 
 #Edit config-ncrna.txt
 
@@ -131,8 +133,8 @@ echo "cmd : $COMMAND_LINE" >> $DEBUG
 # **************** END NEW *******************************************************************************************************************************
 
 #Launch ncPRO analysis
-echo "cmd : /bioinfo/projects_prod/ncpro/bin/ncproseq_v1.5.1/bin/ncPRO-seq $COMMAND_LINE" >> $DEBUG
-/bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG 2>&1
+echo "cmd : /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE" >> $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG 2>&1
 
 #Galaxy output handling
 

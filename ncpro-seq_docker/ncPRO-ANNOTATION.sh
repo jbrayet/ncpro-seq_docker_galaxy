@@ -56,7 +56,7 @@ fi
 
 #Deploy ncPRO directories structure
 
-/usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
 # READ_GROUP = 1 ! (always)
 
 
@@ -66,7 +66,8 @@ chmod 777 -R $OUTPUT_PATH
 cd $OUTPUT_PATH
 
 rm annotation
-ln -s /bioinfo/local/curie/ngs-data-analysis/annotation .
+
+ln -s $annotationPath annotation
 
 #Create symbolic link to input
 
@@ -143,7 +144,7 @@ fi
 
 #Launch ncPRO analysis
 
-/bioinfo/local/curie/ngs-data-analysis/ncPRO-seq/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG
 
 ##***TEST
 

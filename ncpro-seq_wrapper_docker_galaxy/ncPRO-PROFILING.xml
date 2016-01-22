@@ -46,22 +46,23 @@
   <inputs>
     <param name="input" type="data" format="bam" label="Select your input file format" help="Aligned file (BAM) is required."/>
     <param name="genome" type="select" label="Select a reference genome" help="All the samples have to belong to the same species."> <!-- values should be the same as annotation files names, this value goes to ORGANISM in config file-->
-		<option value="mm9"> Mouse (mm9)</option>
-		<option value="mm10"> Mouse (mm10)</option>
-        <option value="hg19"> Human (hg19)</option>
-    	<option value="rn4">Rat</option>
-    	<option value="TAIR9">A. Thaliana</option>
-    	<option value="ce6">C. Elegans</option>
-    	<option value="galGal3">Chicken</option>
-    	<option value="dm3">D. melanogaster</option>
-    	<option value="bosTau4">Cow</option>
-    	<option value="canFam2">Dog</option>
-    	<option value="equCab2">Horse</option>
-    	<option value="rheMac2">Macaca</option>
-    	<option value="monDom5">Opossum</option>
-    	<option value="ornAna1">Platypus</option>
-    	<option value="taeGut1">Zebrafinch</option>
-    	<option value="Zv9">Zebrafish</option>
+        <option value="human_hg19">hg19</option>
+        <option value="mouse_mm10">mm10</option>
+        <option value="mouse_mm9">mm9</option>
+        <option value="zebrafish_Zv9">Zv9</option>
+        <option value="athaliana_TAIR9">TAIR9</option>
+        <option value="zebrafinch_taeGut1">taeGut1</option>
+        <option value="chicken_galGal3">galGal3</option>
+        <option value="rat_rn4">rn4</option>
+        <option value="rat_rn5">rn5</option>
+        <option value="platypus_ornAna1">ornAna1</option>
+        <option value="opossum_monDom5">monDom5</option>
+        <option value="macaca_rheMac2">rheMac2</option>
+        <option value="horse_equCab2">equCab2</option>
+        <option value="dog_canFam2">canFam2</option>
+        <option value="dmelanogaster_dm3">dm3</option>
+        <option value="cow_bosTau4">bosTau4</option>
+        <option value="celegans_ce6">ce6</option>
     </param>
 
 
