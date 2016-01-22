@@ -1,5 +1,8 @@
 <tool id="ncPRO-PROFILING" name="Profiling">
   <description>of mapped reads</description>
+  <requirements>
+    <container type="docker">jbrayet/ncproseq:1.6.5</container>
+  </requirements>
   <command interpreter="bash">ncPRO-PROFILING.sh
   -i $input 
   -g $genome 
@@ -23,6 +26,7 @@
 	-o $out_rmsk_ab
 	-p $out_rmsk_dis
   #end if
+  -r ${__root_dir__}
   </command>
   
   <!-- 

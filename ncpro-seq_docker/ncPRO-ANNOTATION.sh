@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "i:g:t:d:e:l:u:v:o:n:" optionName; do
+while getopts "i:g:t:d:e:l:u:v:o:n:r:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
@@ -13,12 +13,24 @@ u) UCSC="$OPTARG";;
 v) UCSC_TRACK="$OPTARG";;
 o) OUT="$OPTARG";;
 n) NORM="$OPTARG";;
+r) ROOT_DIR="$OPTARG";;
 
 
 esac
 done
 
+##### ncPRO-seq annotation - Galaxy #####
 
+GENOME_2=`echo $GENOME | cut -d"_" -f2`
+
+databasePath= $ROOT_DIR+"/database/files"
+
+mkdir -p $databasePath/ncproseqAnnotation
+mkdir -p $databasePath/ncproseqAnnotation/annotation
+annotationPath=$databasePath/ncproseqAnnotation/annotation
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
+
+#########
 
 OUTPUT_PATH_DIR=`dirname $LOG_FILE`
 OUTPUT_PATH_NAME=`basename $LOG_FILE .dat`

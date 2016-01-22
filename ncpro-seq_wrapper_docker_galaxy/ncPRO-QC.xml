@@ -2,7 +2,6 @@
   <description>of sRNA-seq data</description>
   <requirements>
     <container type="docker">jbrayet/ncproseq:1.6.5</container>
-    <yield/>
   </requirements>
   <command interpreter="bash">ncPRO-QC.sh 
   #for $i in $input_conditional.sampleNumber.samples

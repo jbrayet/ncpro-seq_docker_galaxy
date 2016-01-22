@@ -1,5 +1,8 @@
 <tool id="ncPRO-ANNOTATION" name="Annotation">
   <description>of mapped reads</description>
+  <requirements>
+    <container type="docker">jbrayet/ncproseq:1.6.5</container>
+  </requirements>
   <command interpreter="bash">
 <!-- changes :
 - type and label in : <data format="bed" name="out_ucsc" label="annotation tracks (testing sens track)">
@@ -29,6 +32,7 @@ ncPRO-ANNOTATION.sh
   #if str($ucsc_track) == 'True':
 	-v $out_ucsc
   #end if
+  -r ${__root_dir__}
   </command>
   
   <!-- 

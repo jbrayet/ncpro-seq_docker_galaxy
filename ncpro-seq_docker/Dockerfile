@@ -9,9 +9,8 @@
 # Public License, either Version 2, June 1991 or Version 3, June 2007.
 
 FROM ubuntu:14.04
-FROM r-base:3.1.2
 
-RUN apt-get update && apt-get install -f -y \
+RUN apt-get update && apt-get install -y \
     wget \
     gfortran \
     zlib1g-dev \
@@ -19,20 +18,26 @@ RUN apt-get update && apt-get install -f -y \
     python-dev \
     libxt-dev \
     libpango1.0-dev \
-    libmagickcore-6.q16-2 \
-    libmagickwand-6.q16-2 \
-    imagemagick-6.q16 \
     imagemagick \
     apache2 \
-    ca-certificates \
     php5 \
     libapache2-mod-php5 \
     unzip \
     python-setuptools \
-    python-pil \
+    libjpeg62 \
     python-imaging \
+    libjpeg62-dev \
     libfreetype6 \
     libfreetype6-dev
+
+RUN wget http://cran.r-project.org/src/base/R-3/R-3.1.0.tar.gz -P /usr/bin
+RUN tar -zxvf /usr/bin/R-3.1.0.tar.gz -C /usr/bin/
+RUN rm -rf /usr/bin/R-3.1.0.tar.gz
+WORKDIR /usr/bin/R-3.1.0
+RUN ./configure --with-readline=no
+RUN make
+
+RUN ln -s /usr/bin/R-3.1.0/bin/R /usr/bin/R
 
 RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/docker/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -P /usr/bin
 RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -C /usr/bin/

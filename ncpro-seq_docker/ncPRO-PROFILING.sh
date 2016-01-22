@@ -3,7 +3,7 @@
 
 # here GROUP_READ = 1 ===> two types of profiling graph (abundant and distinct)
 
-while getopts "i:g:t:d:e:l:o:p:" optionName; do
+while getopts "i:g:t:d:e:l:o:p:r:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
@@ -14,10 +14,23 @@ e) EXT="$OPTARG";;
 l) LOG_FILE="$OPTARG";;
 o) OUT_AB="$OPTARG";;
 p) OUT_DIS="$OPTARG";;
+r) ROOT_DIR="$OPTARG";;
 
 esac
 done
 
+##### ncPRO-seq annotation - Galaxy #####
+
+GENOME_2=`echo $GENOME | cut -d"_" -f2`
+
+databasePath= $ROOT_DIR+"/database/files"
+
+mkdir -p $databasePath/ncproseqAnnotation
+mkdir -p $databasePath/ncproseqAnnotation/annotation
+annotationPath=$databasePath/ncproseqAnnotation/annotation
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
+
+#########
 
 OUTPUT_PATH_DIR=`dirname $OUT_AB`
 OUTPUT_PATH_NAME=`basename $OUT_AB .dat`
