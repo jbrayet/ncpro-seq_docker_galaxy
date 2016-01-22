@@ -1,29 +1,18 @@
 # Dockerfile to install ncPRO-seq pipeline. 
 # Jocelyn Brayet
-# wget Dockerfile http://sourceforge.net/projects/ncproseq/files/docker/Dockerfile
-# docker build -t ncpro:1.0 - < Dockerfile
-# mkdir /var/lib/docker/bowtie_indexes
-# mkdir /var/lib/docker/annotations
-# mkdir /var/lib/docker/data
-# mkdir /var/lib/docker/results
-# wget ncPRO-seq-testdata.fastq http://sourceforge.net/projects/ncproseq/files/data/ncPRO-seq-testdata.fastq
-# wget bowtie_indexes_mm10.tar.gz http://zerkalo.curie.fr:8080/partage/galaxy_test_jbrayet/ncPRO-seq/bowtie_indexes_mm10.tar.gz
-# docker run -i -t -v /var/lib/docker/bowtie_indexes/:/usr/curie_ngs/bowtie_indexes/ -v /var/lib/docker/annotations/:/usr/curie_ngs/annotation/ -v /var/lib/docker/data/:/usr/curie_ngs/rawdata/ -v /var/lib/docker/results/:/usr/curie_ngs/results_host/ ncpro:1.0
 
-# ncPRO-seq
+# ncPRO-seq v1.6.5
 # Copyleft ↄ⃝ 2012 Institut Curie
 # Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
 # Contact: bioinfo.ncproseq@curie.fr
 # This software is distributed without any guarantee under the terms of the GNU General
 # Public License, either Version 2, June 1991 or Version 3, June 2007.
 
-FROM ubuntu
-
-MAINTAINER Jocelyn Brayet <jocelyn.brayet@curie.fr>
+FROM ubuntu:14.04
+FROM r-base:3.1.2
 
 RUN apt-get update && apt-get install -y \
     wget \
-    curl \
     gfortran \
     zlib1g-dev \
     libncurses-dev \
@@ -42,26 +31,17 @@ RUN apt-get update && apt-get install -y \
     libfreetype6 \
     libfreetype6-dev
 
-RUN wget http://cran.r-project.org/src/base/R-3/R-3.1.0.tar.gz -P /usr/bin
-RUN tar -zxvf /usr/bin/R-3.1.0.tar.gz -C /usr/bin/
-RUN rm -rf /usr/bin/R-3.1.0.tar.gz
-WORKDIR /usr/bin/R-3.1.0
-RUN ./configure --with-readline=no
-RUN make
-
-RUN ln -s /usr/bin/R-3.1.0/bin/R /usr/bin/R
-
-RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/docker/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz -P /usr/bin
-RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz -C /usr/bin/
-RUN rm -rf /usr/bin/ncPRO-seq.v1.6.3_Docker_galaxy.tar.gz
+RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/ncPRO-seq.v1.6.5.tar.gz -P /usr/bin
+RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.5.tar.gz -C /usr/bin/
+RUN rm -rf /usr/bin/ncPRO-seq.v1.6.5.tar.gz
 
 RUN mkdir /usr/curie_ngs/
 RUN mkdir /usr/curie_ngs/bowtie_indexes/
 
-WORKDIR /usr/bin/ncPRO-seq.v1.6.3_Docker
+WORKDIR /usr/bin/ncPRO-seq.v1.6.5.tar.gz
 RUN service apache2 start && make install < answers.txt
 
-RUN /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
+RUN /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib
 RUN ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib
@@ -73,5 +53,9 @@ RUN tar -zxvf /usr/bin/Imaging-1.1.7.tar.gz -C /usr/bin/
 RUN rm -rf /usr/bin/Imaging-1.1.7.tar.gz
 RUN cd /usr/bin/Imaging-1.1.7; python setup.py install --user
 
-RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncproseq_v1.6.3/config-system.txt
+RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncproseq_v1.6.5/config-system.txt
+
+#############################################
+
+MAINTAINER Jocelyn Brayet <jocelyn.brayet@curie.fr>
 

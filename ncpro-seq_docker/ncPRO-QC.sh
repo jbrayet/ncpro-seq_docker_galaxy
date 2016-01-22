@@ -3,7 +3,7 @@
 # I added the 'me' lines 
 #assumption : a user can't begin with a fastq  file already grouped !
 
-while getopts "i:s:n:g:m:o:f:r:h:p:l:t:a:q:" optionName; do
+while getopts "i:s:n:g:m:o:f:r:h:p:l:t:a:q:d:" optionName; do
 case "$optionName" in
 
 i) INPUT+="$OPTARG,";;
@@ -20,6 +20,7 @@ l) LOG_FILE="$OPTARG";;
 t) INPUT_TYPE="$OPTARG";;
 a) ALIGNMENT="$OPTARG";;
 q) FASTQ_FORMAT+="$OPTARG,";;
+d) ROOT_DIR="$OPTARG";;
 
 esac
 done
@@ -28,12 +29,12 @@ done
 
 GENOME_2=`echo $GENOME | cut -d"_" -f2`
 
-databasePath=$(find / -type d -name files | grep database)
+databasePath= $ROOT_DIR+"/database/files"
 
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
-[ ! -d $annotationPath/$GENOME_2 ] && curl -L -O http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
 
 #########
 
@@ -75,7 +76,7 @@ fi
 
 #Deploy ncPRO directories structure
 
-/usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
+/usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o $OUTPUT_PATH > $DEBUG
 
 echo "$INPUT" >> $DEBUG
 echo "$SAMPLENAME" >> $DEBUG
@@ -97,8 +98,8 @@ echo "$bamArray" >> $DEBUG
 
 #Go to working directory
 
-cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*.item $annotationPath
-cp -rf /usr/curie_ngs/ncproseq_v1.6.3/annotation/*_items.txt $annotationPath
+cp -rf /usr/curie_ngs/ncproseq_v1.6.5/annotation/*.item $annotationPath
+cp -rf /usr/curie_ngs/ncproseq_v1.6.5/annotation/*_items.txt $annotationPath
 
 if [[ ! -L "$databasePath/ncproseqBowtieIndexes" && ! -d "$databasePath/ncproseqBowtieIndexes" ]]
 then
@@ -423,7 +424,7 @@ function createHtmlReport
 if [[ $REPORT == "all" ]];then
 
     
-    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE -s html_builder -s pdf_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE -s html_builder -s pdf_builder>> $DEBUG
 
     createHtmlReport
 
@@ -434,7 +435,7 @@ fi
 if [[ $REPORT == "pdf" ]];then
 
 
-    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE  -s pdf_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE  -s pdf_builder>> $DEBUG
 
     cp ${OUTPUT_PATH}/Analysis_report_ncPRO-seq.pdf $PDF_REPORT
 
@@ -444,7 +445,7 @@ fi
 if [[ $REPORT == "html" ]];then
 
 
-    /usr/curie_ngs/ncproseq_v1.6.3/bin/ncPRO-seq $COMMAND_LINE -s html_builder>> $DEBUG
+    /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE -s html_builder>> $DEBUG
 
     createHtmlReport
 

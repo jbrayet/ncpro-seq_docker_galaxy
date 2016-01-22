@@ -1,7 +1,7 @@
 <tool id="ncPRO-QC" name="Alignment and QC">
   <description>of sRNA-seq data</description>
   <requirements>
-    <container type="docker">jbrayet/ncproseq:1.6.3</container>
+    <container type="docker">jbrayet/ncproseq:1.6.5</container>
     <yield/>
   </requirements>
   <command interpreter="bash">ncPRO-QC.sh 
@@ -37,6 +37,7 @@
       -o $outbam_6 -o $outbam_7 -o $outbam_8 -o $outbam_9
     #end if 
   #end if
+  -d ${__root_dir__}
   </command>
   <inputs>
     <param name="projectName" type="text" value="Project_1" size="20" label="Give a project name" >
