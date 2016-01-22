@@ -11,7 +11,7 @@
 FROM ubuntu:14.04
 FROM r-base:3.1.2
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -f -y \
     wget \
     gfortran \
     zlib1g-dev \
@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y \
     libapache2-mod-php5 \
     unzip \
     python-setuptools \
+    libjpeg62 \
     python-pil \
     python-imaging \
     libjpeg62-dev \
