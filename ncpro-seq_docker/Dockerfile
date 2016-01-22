@@ -34,17 +34,17 @@ RUN apt-get update && apt-get install -f -y \
     libfreetype6 \
     libfreetype6-dev
 
-RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/ncPRO-seq.v1.6.5.tar.gz -P /usr/bin
-RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.5.tar.gz -C /usr/bin/
-RUN rm -rf /usr/bin/ncPRO-seq.v1.6.5.tar.gz
+RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/docker/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -P /usr/bin
+RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -C /usr/bin/
+RUN rm -rf /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz
 
 RUN mkdir /usr/curie_ngs/
 RUN mkdir /usr/curie_ngs/bowtie_indexes/
 
-WORKDIR /usr/bin/ncPRO-seq.v1.6.5.tar.gz
+WORKDIR /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz
 RUN service apache2 start && make install < answers.txt
 
-RUN /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
+RUN /usr/curie_ngs/ncPRO-seq.v1.6.5_Docker_galaxy/bin/ncPRO-deploy -o /usr/curie_ngs/ncPRO-seq_results
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib
 RUN ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib
@@ -56,7 +56,7 @@ RUN tar -zxvf /usr/bin/Imaging-1.1.7.tar.gz -C /usr/bin/
 RUN rm -rf /usr/bin/Imaging-1.1.7.tar.gz
 RUN cd /usr/bin/Imaging-1.1.7; python setup.py install --user
 
-RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncproseq_v1.6.5/config-system.txt
+RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncPRO-seq.v1.6.5_Docker_galaxy/config-system.txt
 
 #############################################
 
