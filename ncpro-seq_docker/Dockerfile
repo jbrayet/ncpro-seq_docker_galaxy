@@ -28,7 +28,6 @@ RUN apt-get update && apt-get install -y \
     libapache2-mod-php5 \
     unzip \
     python-setuptools \
-    libjpeg62 \
     python-pil \
     python-imaging \
     libjpeg62-dev \
