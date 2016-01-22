@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
     python-dev \
     libxt-dev \
     libpango1.0-dev \
+    libmagickcore-6.q16-2 \
+    libmagickwand-6.q16-2 \
     imagemagick-6.q16 \
     imagemagick \
     apache2 \
