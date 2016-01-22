@@ -29,10 +29,8 @@ RUN apt-get update && apt-get install -f -y \
     libapache2-mod-php5 \
     unzip \
     python-setuptools \
-    libjpeg62 \
     python-pil \
     python-imaging \
-    libjpeg62-dev \
     libfreetype6 \
     libfreetype6-dev
 
