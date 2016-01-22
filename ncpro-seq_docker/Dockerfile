@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     python-dev \
     libxt-dev \
     libpango1.0-dev \
+    imagemagick-6.q16 \
     imagemagick \
     apache2 \
     php5 \
@@ -26,6 +27,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     python-setuptools \
     libjpeg62 \
+    python-pil \
     python-imaging \
     libjpeg62-dev \
     libfreetype6 \
