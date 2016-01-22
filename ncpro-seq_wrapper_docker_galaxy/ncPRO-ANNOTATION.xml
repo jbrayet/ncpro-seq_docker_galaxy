@@ -1,7 +1,7 @@
 <tool id="ncPRO-ANNOTATION" name="Annotation">
   <description>of mapped reads</description>
   <requirements>
-    <container type="docker">jbrayet/ncproseq:1.6.5</container>
+    <container type="docker">institutcuriengsintegration/ncproseqgalaxy:1.6.5</container>
   </requirements>
   <command interpreter="bash">
 <!-- changes :

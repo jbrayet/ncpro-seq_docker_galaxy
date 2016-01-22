@@ -1,7 +1,7 @@
 <tool id="ncPRO-QC" name="Alignment and QC">
   <description>of sRNA-seq data</description>
   <requirements>
-    <container type="docker">jbrayet/ncproseq:1.6.5</container>
+    <container type="docker">institutcuriengsintegration/ncproseqgalaxy:1.6.5</container>
   </requirements>
   <command interpreter="bash">ncPRO-QC.sh 
   #for $i in $input_conditional.sampleNumber.samples

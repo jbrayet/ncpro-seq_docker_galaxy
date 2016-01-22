@@ -30,14 +30,14 @@ RUN apt-get update && apt-get install -y \
     libfreetype6 \
     libfreetype6-dev
 
-RUN wget http://cran.r-project.org/src/base/R-3/R-3.1.0.tar.gz -P /usr/bin
-RUN tar -zxvf /usr/bin/R-3.1.0.tar.gz -C /usr/bin/
-RUN rm -rf /usr/bin/R-3.1.0.tar.gz
-WORKDIR /usr/bin/R-3.1.0
+RUN wget http://cran.r-project.org/src/base/R-3/R-3.2.3.tar.gz -P /usr/bin
+RUN tar -zxvf /usr/bin/R-3.2.3.tar.gz -C /usr/bin/
+RUN rm -rf /usr/bin/R-3.2.3.tar.gz
+WORKDIR /usr/bin/R-3.2.3
 RUN ./configure --with-readline=no
 RUN make
 
-RUN ln -s /usr/bin/R-3.1.0/bin/R /usr/bin/R
+RUN ln -s /usr/bin/R-3.2.3/bin/R /usr/bin/R
 
 RUN wget https://github.com/jbrayet/ncpro-seq/raw/master/docker/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -P /usr/bin
 RUN tar -zxvf /usr/bin/ncPRO-seq.v1.6.5_Docker_galaxy.tar.gz -C /usr/bin/
