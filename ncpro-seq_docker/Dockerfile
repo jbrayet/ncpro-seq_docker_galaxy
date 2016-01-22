@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -f -y \
     imagemagick-6.q16 \
     imagemagick \
     apache2 \
+    ca-certificates \
     php5 \
     libapache2-mod-php5 \
     unzip \
