@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "i:g:t:d:e:l:u:v:o:n:r:" optionName; do
+while getopts "i:g:t:d:e:l:u:v:o:n:r:p:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
@@ -14,6 +14,7 @@ v) UCSC_TRACK="$OPTARG";;
 o) OUT="$OPTARG";;
 n) NORM="$OPTARG";;
 r) ROOT_DIR="$OPTARG";;
+p) PROJECTNAME="$OPTARG";;
 
 
 esac
@@ -82,8 +83,23 @@ sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
 
 sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
 sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
-sed -i "s:^FASTQ_FORMAT =.*$:FASTQ_FORMAT = $FASTQ_FORMAT:g" $CONFIG_FILE
 #sed -i "s/LOGFILE = pipeline.log/LOGFILE = $LOG_FILE/g" $CONFIG_FILE
+
+if [[ -f "$annotationPath/$GENOME_2/cluster_pirna.gff" ]]
+then
+    ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+else
+    if [[ -f "$annotationPath/$GENOME_2/pirna.gff" ]]
+    then
+        ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    else
+    ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    fi
+fi
+
+sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
+
+
 
 if [[ $DATATYPE == "matmir" ]];then
 
