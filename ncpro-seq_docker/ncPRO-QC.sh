@@ -29,12 +29,12 @@ done
 
 GENOME_2=`echo $GENOME | cut -d"_" -f2`
 
-databasePath= $ROOT_DIR/database/files
+databasePath=$ROOT_DIR/database/files
 
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
-[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
+[ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath -q && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
 
 #########
 

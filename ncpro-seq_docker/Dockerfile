@@ -28,7 +28,8 @@ RUN apt-get update && apt-get install -y \
     python-imaging \
     libjpeg62-dev \
     libfreetype6 \
-    libfreetype6-dev
+    libfreetype6-dev \
+    samtools
 
 RUN wget http://cran.r-project.org/src/base/R-3/R-3.2.3.tar.gz -P /usr/bin
 RUN tar -zxvf /usr/bin/R-3.2.3.tar.gz -C /usr/bin/
