@@ -77,7 +77,12 @@ ln -s $INPUT ${OUTPUT_PATH}/rawdata/input.bam
 
 CONFIG_FILE=config-ncrna.txt
 
-sed -i "s/mm9/$GENOME/g" $CONFIG_FILE
+sed -i "s:^BOWTIE_GENOME_REFERENCE =.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
+sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
+
+sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
+sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
+sed -i "s:^FASTQ_FORMAT =.*$:FASTQ_FORMAT = $FASTQ_FORMAT:g" $CONFIG_FILE
 #sed -i "s/LOGFILE = pipeline.log/LOGFILE = $LOG_FILE/g" $CONFIG_FILE
 
 if [[ $DATATYPE == "matmir" ]];then
@@ -119,7 +124,7 @@ fi
 ## ********************************** NEW for BAM files: check if reads are grouped (or not) + change command line accordingly***************************###
 
 #check if file is already grouped (grouped => RG = 1; not grouped => 0)
-RG=`samtools view $INPUT | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
+RG=`samtools view $INPUT | awk 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
 
 if [[ $RG  == 0 ]];then # if not grouped
 	# add -s processBam to do the grouping
@@ -148,7 +153,7 @@ fi
 
 ##***TEST
 
-RG=`samtools view  ${OUTPUT_PATH}/bowtie_results/input.bam | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
+RG=`samtools view  ${OUTPUT_PATH}/bowtie_results/input.bam | awk 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
 echo " RG after pre-processing = $RG" >> $DEBUG
 #**** TEST
 
