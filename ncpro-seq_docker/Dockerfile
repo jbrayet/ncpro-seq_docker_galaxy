@@ -61,7 +61,7 @@ RUN tar -zxvf /usr/bin/Imaging-1.1.7.tar.gz -C /usr/bin/
 RUN rm -rf /usr/bin/Imaging-1.1.7.tar.gz
 RUN cd /usr/bin/Imaging-1.1.7; python setup.py install --user
 
-RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncPRO-seq.v1.6.5_Docker_galaxy/config-system.txt
+RUN sed -i 's/MAIL_PATH = /MAIL_PATH = \/usr\/bin/g' /usr/curie_ngs/ncproseq_v1.6.5/config-system.txt
 
 #############################################
 
