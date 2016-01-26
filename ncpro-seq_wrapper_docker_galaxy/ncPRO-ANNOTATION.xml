@@ -33,6 +33,7 @@ ncPRO-ANNOTATION.sh
 	-v $out_ucsc
   #end if
   -r ${__root_dir__}
+  -p $projectName
   </command>
   
   <!-- 

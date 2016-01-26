@@ -27,6 +27,7 @@
 	-p $out_rmsk_dis
   #end if
   -r ${__root_dir__}
+  -p $projectName
   </command>
   
   <!-- 
