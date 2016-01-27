@@ -101,7 +101,16 @@ fi
 
 sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
 
+####### Remove information in config-ncrna.txt file ###############
 
+sed -i "s:^MATURE_MIRNA =.*$:MATURE_MIRNA =:g" $CONFIG_FILE
+sed -i "s:^PRECURSOR_MIRNA =.*$:PRECURSOR_MIRNA =:g" $CONFIG_FILE
+sed -i "s:^TRNA_UCSC =.*$:TRNA_UCSC =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RFAM_EX =.*$:NCRNA_RFAM_EX =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RMSK_EX =.*$:NCRNA_RMSK_EX =:g" $CONFIG_FILE 
+sed -i "s:^OTHER_NCRNA_GFF =.*$:OTHER_NCRNA_GFF =:g" $CONFIG_FILE 
+
+#######################################
 
 if [[ $DATATYPE == "matmir" ]];then
 
