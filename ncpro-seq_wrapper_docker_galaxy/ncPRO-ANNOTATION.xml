@@ -17,7 +17,7 @@ ncPRO-ANNOTATION.sh
   -n $rpm
   -l $outlog
   #if str($cond.datatype) == "matmir":
-    #if $cond.datatype.allmiRNA == "True"    
+    #if $cond['allmiRNA'] == "True"    
 	  -o $out_mirna
 	  -a $out_all_mirna
 	#else
@@ -26,7 +26,7 @@ ncPRO-ANNOTATION.sh
   #elif str($cond.datatype) == 'trna':
 	-o $out_trna
   #elif str($cond.datatype) == 'premir':
-    #if $cond.datatype.allmiRNA == "True"    
+    #if $cond['allmiRNA'] == "True"    
 	  -o $out_premirna
 	  -a $out_all_premirna
 	#else
