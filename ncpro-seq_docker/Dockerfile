@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-dev \
     libfreetype6 \
     libfreetype6-dev \
-    samtools
+    samtools \
+    gawk
 
 RUN wget http://cran.r-project.org/src/base/R-3/R-3.2.3.tar.gz -P /usr/bin
 RUN tar -zxvf /usr/bin/R-3.2.3.tar.gz -C /usr/bin/

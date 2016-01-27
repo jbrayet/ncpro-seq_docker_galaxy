@@ -81,8 +81,10 @@ CONFIG_FILE=config-ncrna.txt
 sed -i "s:^BOWTIE_GENOME_REFERENCE =.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
 sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
 
-sed -i "/N_CPU/c\N_CPU = 6" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
-sed -i "s/test_Curie/$PROJECTNAME/g" $CONFIG_FILE
+sed -i "s:^N_CPU.*$:N_CPU = 4:g" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
+sed -i "s:^PROJECT_NAME =.*$:PROJECT_NAME = $PROJECTNAME:g" $CONFIG_FILE
+
+
 #sed -i "s/LOGFILE = pipeline.log/LOGFILE = $LOG_FILE/g" $CONFIG_FILE
 
 if [[ -f "$annotationPath/$GENOME_2/cluster_pirna.gff" ]]
@@ -103,25 +105,25 @@ sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
 
 if [[ $DATATYPE == "matmir" ]];then
 
-	sed -i "s/MATURE_MIRNA =/MATURE_MIRNA = $EXT/g" $CONFIG_FILE
+	sed -i "s:^MATURE_MIRNA =.*$:MATURE_MIRNA = $EXT:g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "premir" ]];then
 
-	sed -i "s/PRECURSOR_MIRNA =/PRECURSOR_MIRNA = $EXT/g" $CONFIG_FILE
+	sed -i "s:^PRECURSOR_MIRNA =.*$:PRECURSOR_MIRNA = $EXT:g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "trna" ]];then
 
-	sed -i "s/TRNA_UCSC =/TRNA_UCSC = $EXT/g" $CONFIG_FILE
+	sed -i "s:^TRNA_UCSC =.*$:TRNA_UCSC = $EXT:g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "rfam" ]];then
 
 #	sed -i "s/NCRNA_RFAM =/NCRNA_RFAM = $RFAM_DATABASE/g" $CONFIG_FILE
-	sed -i "s/NCRNA_RFAM_EX =/NCRNA_RFAM_EX = $EXT/g" $CONFIG_FILE
+	sed -i "s:^NCRNA_RFAM_EX =.*$:NCRNA_RFAM_EX = $EXT:g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "rmsk" ]];then
 
 #	sed -i "s/NCRNA_RMSK =/NCRNA_RMSK = $RMSK_DATABASE/g" $CONFIG_FILE
-	sed -i "s/NCRNA_RMSK_EX =/NCRNA_RMSK_EX = $EXT/g" $CONFIG_FILE 
+	sed -i "s:^NCRNA_RMSK_EX =.*$:NCRNA_RMSK_EX = $EXT:g" $CONFIG_FILE 
 
 
 elif [[ $DATATYPE == "other" ]];then
@@ -131,7 +133,7 @@ elif [[ $DATATYPE == "other" ]];then
 	echo "${gff[0]}" | sed 's/\//\\\//g' > gff
 	gff_file=$(head -n 1 gff)
 
-	sed -i "s/OTHER_NCRNA_GFF =/OTHER_NCRNA_GFF = $gff_file/g" $CONFIG_FILE 
+	sed -i "s:^OTHER_NCRNA_GFF =.*$:OTHER_NCRNA_GFF = $gff_file:g" $CONFIG_FILE 
 fi
 
 
@@ -140,7 +142,8 @@ fi
 ## ********************************** NEW for BAM files: check if reads are grouped (or not) + change command line accordingly***************************###
 
 #check if file is already grouped (grouped => RG = 1; not grouped => 0)
-RG=`samtools view $INPUT | awk 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
+RG=`samtools view $INPUT | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
+echo " RG before pre-processing = $RG"
 
 if [[ $RG  == 0 ]];then # if not grouped
 	# add -s processBam to do the grouping
@@ -165,12 +168,15 @@ fi
 
 #Launch ncPRO analysis
 
+echo $COMMAND_LINE
+
 /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG
 
 ##***TEST
 
-RG=`samtools view  ${OUTPUT_PATH}/bowtie_results/input.bam | awk 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
+RG=`samtools view  ${OUTPUT_PATH}/bowtie_results/input.bam | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
 echo " RG after pre-processing = $RG" >> $DEBUG
+echo " RG after pre-processing = $RG"
 #**** TEST
 
 
