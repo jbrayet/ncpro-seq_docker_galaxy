@@ -12,17 +12,26 @@ ncPRO-ANNOTATION.sh
   -i $input 
   -g $genome 
   -t $cond.datatype 
-  -d $cond['database']
   -e $cond['database']$cond['borne']$cond['N1']"_"$cond['N2']
   -u $ucsc_track
   -n $rpm
   -l $outlog
   #if str($cond.datatype) == "matmir":
-	-o $out_mirna
+    #if $cond.datatype.allmiRNA == "True"    
+	  -o $out_mirna
+	  -a $out_all_mirna
+	#else
+      -o $out_mirna
+    #end if
   #elif str($cond.datatype) == 'trna':
 	-o $out_trna
   #elif str($cond.datatype) == 'premir':
-	-o $out_premirna
+    #if $cond.datatype.allmiRNA == "True"    
+	  -o $out_premirna
+	  -a $out_all_premirna
+	#else
+	  -o $out_premirna
+	#end if
   #elif str($cond.datatype) == 'rfam':
   	-o $out_rfam
   #elif str($cond.datatype) == 'rmsk':
@@ -103,9 +112,6 @@ ncPRO-ANNOTATION.sh
 <!--END OTHER annotation files -->
 
 	    <when value="matmir">
-	      <param name="database" type="select">
-			<option value="miRNA">miRNA</option>
-	      </param>
 	      
 <!-- mature mi RNA : NO repeats in annotation !-->
 
@@ -123,14 +129,12 @@ ncPRO-ANNOTATION.sh
 		  	<param name="N2" type="text" size="4" value="+0" label="To">
 				<help>Fill this field with +/- value</help>
 		  	</param>
+		    <param name="allmiRNA" type="boolean" value="False" truevalue="True" falsevalue="False" label="All miRBase miRNA" help="Create a result file with all miRBase RNA (even if the miRNA mappes with 0 sequence)"/>
 	    </when>
 
 
 <!-- PRE miRNA : NO repeats in annotation  -->	    
 	    <when value="premir">
-	      <param name="database" type="select">
-				<option value="miRNA">miRNA</option>
-	      </param>
 	    
 		<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
 					<option value="_e_">Extend the annotation</option>
@@ -145,14 +149,12 @@ ncPRO-ANNOTATION.sh
 		  	<param name="N2" type="text" size="4" value="+0" label="To">
 				<help>Fill this field with +/- value</help>
 		  	</param>
+		    <param name="allmiRNA" type="boolean" value="False" truevalue="True" falsevalue="False" label="All miRBase miRNA" help="Create a result file with all miRBase RNA (even if the miRNA mappes with 0 sequence)"/>
 	    </when>
 
 	    
 <!-- TRNA : NO repeats in annotation  -->	    	    
 	    <when value="trna">
-	      <param name="database" type="select">
-		<option value="tRNA">tRNA</option>
-	     </param>
 			<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
 					<option value="_e_">Extend the annotation</option>
 					<option value="_i_">Shorten the annotation</option>
@@ -543,8 +545,14 @@ ncPRO-ANNOTATION.sh
     <data format="tabular" name="out_mirna" label="miRNA annotation table">
 	<filter>(str(cond['datatype']) == "matmir")</filter>
     </data>
+    <data format="tabular" name="out_all_mirna" label="miRNA annotation table with all miRBase RNA">
+	<filter>((str(cond['datatype']) == "matmir") and (cond['allmiRNA'] == True))</filter>
+    </data>
     <data format="tabular" name="out_premirna" label="premiRNA annotation table">
 	<filter>(str(cond['datatype']) == "premir")</filter>
+    </data>
+    <data format="tabular" name="out_all_premirna" label="premiRNA annotation table with all miRBase RNA">
+	<filter>((str(cond['datatype']) == "premir") and (cond['allmiRNA'] == True))</filter>
     </data>
     <data format="tabular" name="out_trna" label="tRNA annotation table">
 	<filter>(str(cond['datatype']) == "trna")</filter>

@@ -1,17 +1,17 @@
 #!/bin/bash
 
-while getopts "i:g:t:d:e:l:u:v:o:n:r:p:" optionName; do
+while getopts "i:g:t:e:l:u:v:ao:n:r:p:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
 g) GENOME="$OPTARG";;
 t) DATATYPE="$OPTARG";;
-d) DATABASE="$OPTARG";;
 e) EXT="$OPTARG";;
 l) LOG_FILE="$OPTARG";;
 u) UCSC="$OPTARG";;
 v) UCSC_TRACK="$OPTARG";;
 o) OUT="$OPTARG";;
+a) OUT_ALL="$OPTARG";;
 n) NORM="$OPTARG";;
 r) ROOT_DIR="$OPTARG";;
 p) PROJECTNAME="$OPTARG";;
@@ -106,7 +106,9 @@ sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
 sed -i "s:^MATURE_MIRNA =.*$:MATURE_MIRNA =:g" $CONFIG_FILE
 sed -i "s:^PRECURSOR_MIRNA =.*$:PRECURSOR_MIRNA =:g" $CONFIG_FILE
 sed -i "s:^TRNA_UCSC =.*$:TRNA_UCSC =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RFAM =.*$:NCRNA_RFAM =:g" $CONFIG_FILE
 sed -i "s:^NCRNA_RFAM_EX =.*$:NCRNA_RFAM_EX =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RMSK =.*$:NCRNA_RMSK =:g" $CONFIG_FILE 
 sed -i "s:^NCRNA_RMSK_EX =.*$:NCRNA_RMSK_EX =:g" $CONFIG_FILE 
 sed -i "s:^OTHER_NCRNA_GFF =.*$:OTHER_NCRNA_GFF =:g" $CONFIG_FILE 
 
@@ -126,12 +128,10 @@ elif [[ $DATATYPE == "trna" ]];then
 
 elif [[ $DATATYPE == "rfam" ]];then
 
-#	sed -i "s/NCRNA_RFAM =/NCRNA_RFAM = $RFAM_DATABASE/g" $CONFIG_FILE
 	sed -i "s:^NCRNA_RFAM_EX =.*$:NCRNA_RFAM_EX = $EXT:g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "rmsk" ]];then
 
-#	sed -i "s/NCRNA_RMSK =/NCRNA_RMSK = $RMSK_DATABASE/g" $CONFIG_FILE
 	sed -i "s:^NCRNA_RMSK_EX =.*$:NCRNA_RMSK_EX = $EXT:g" $CONFIG_FILE 
 
 
@@ -195,9 +195,19 @@ mv ${OUTPUT_PATH}/pipeline.log $LOG_FILE
 
 if [[ $NORM == "True" ]];then
     if [[ $DATATYPE == "matmir" ]];then
-	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+        if [[ -z "$OUT_ALL" ]];then
+            mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM_all_miRNA.data $OUT_ALL
+	        mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+	    else
+	    	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+        fi
     elif [[ $DATATYPE == "premir" ]];then
-	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+        if [[ -z "$OUT_ALL" ]];then
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM_all_miRNA.data $OUT_ALL
+	        mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+	    else
+	    	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+        fi
     elif [[ $DATATYPE == "trna" ]];then
 	mv $OUTPUT_PATH/doc/tRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
     elif [[ $DATATYPE == "rfam" ]];then
@@ -207,9 +217,19 @@ if [[ $NORM == "True" ]];then
     fi
 else
     if [[ $DATATYPE == "matmir" ]];then
-	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        if [[ -z "$OUT_ALL" ]];then
+            mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_all_miRNA.data $OUT_ALL
+	        mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+	    else
+	    	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        fi
     elif [[ $DATATYPE == "premir" ]];then
-	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        if [[ -z "$OUT_ALL" ]];then
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_all_miRNA.data $OUT_ALL
+	        mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+	    else
+	    	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        fi
     elif [[ $DATATYPE == "trna" ]];then
 	mv $OUTPUT_PATH/doc/tRNA_${EXT}_all_samples_subfamcov.data $OUT
     elif [[ $DATATYPE == "rfam" ]];then
@@ -228,6 +248,8 @@ mv $OUTPUT_PATH/ucsc/input_*_sens.bedGraph $UCSC_TRACK
 
 fi
 # ***** END FOR NEBULA ONLY *****
+
+rm -rf $OUTPUT_PATH
 
 :<<'galaxy'
 
