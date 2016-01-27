@@ -11,7 +11,7 @@
 ncPRO-ANNOTATION.sh
   -i $input 
   -g $genome 
-  -t $cond.datatype 
+  -t $cond.datatype
   -e $cond['database']$cond['borne']$cond['N1']"_"$cond['N2']
   -u $ucsc_track
   -n $rpm
@@ -123,6 +123,7 @@ ncPRO-ANNOTATION.sh
 					
 					
 			</param>
+			<param name="database" type="hidden" value="miRNA" />
 		  	<param name="N1" type="text" size="4" value="+0" label="From">
 				<help>Fill this field with +/- value</help>
 		  	</param>
@@ -143,6 +144,7 @@ ncPRO-ANNOTATION.sh
 					<option value="_t_">Focus on the 3' end</option>
 					
 			</param>
+			<param name="database" type="hidden" value="miRNA" />
 		  	<param name="N1" type="text" size="4" value="+0" label="From">
 				<help>Fill this field with +/- value</help>
 		  	</param>
@@ -161,6 +163,7 @@ ncPRO-ANNOTATION.sh
 					<option value="_s_">Focus on the 5' end</option>
 					<option value="_t_">Focus on the 3' end</option>
 			</param>
+			<param name="database" type="hidden" value="tRNA" />
 		  	<param name="N1" type="text" size="4" value="+0" label="From">
 				<help>Fill this field with +/- value</help>
 		  	</param>
