@@ -186,22 +186,11 @@ fi
 
 if [ -f ${OUTPUT_PATH}/pic/input_*_${EXT}_distinct.png ]; then
 	convert -resize 60% ${OUTPUT_PATH}/pic/input_*_${EXT}_distinct.png $OUT_DIS
-
 else
 	echo "Distribution of positional read coverage and the read length distribution are unavailable in this annotation family. Check the coverage profile table :\n" > $OUT_DIS
 	cat ${OUTPUT_PATH}/doc/${DATATYPE}_${EXT}_all_samples_scaled_basecov_distinct_all_RPM.data >> $OUT_DIS
 
-fi 
-	
+fi
 
-
-
-
-
-
-
-
-
-
-
+rm -rf $OUTPUT_PATH
 
