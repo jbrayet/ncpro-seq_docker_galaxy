@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "i:g:t:e:l:u:v:ao:n:r:p:" optionName; do
+while getopts "i:g:t:e:l:u:v:o:a::n:r:p:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
@@ -29,6 +29,7 @@ databasePath=$ROOT_DIR/database/files
 mkdir -p $databasePath/ncproseqAnnotation
 mkdir -p $databasePath/ncproseqAnnotation/annotation
 annotationPath=$databasePath/ncproseqAnnotation/annotation
+echo $annotationPath
 [ ! -d $annotationPath/$GENOME_2 ] && wget http://ncpro.curie.fr/ncproseq/install_dir/annotation/$GENOME.tar.gz -P $annotationPath && cd $annotationPath && tar -zxf $GENOME.tar.gz && rm -rf $GENOME.tar.gz
 
 #########
@@ -67,6 +68,8 @@ chmod 777 -R $OUTPUT_PATH
 cd $OUTPUT_PATH
 
 rm annotation
+
+echo "ln -s $annotationPath annotation"
 
 ln -s $annotationPath annotation
 
@@ -152,7 +155,6 @@ fi
 
 #check if file is already grouped (grouped => RG = 1; not grouped => 0)
 RG=`samtools view $INPUT | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
-echo " RG before pre-processing = $RG"
 
 if [[ $RG  == 0 ]];then # if not grouped
 	# add -s processBam to do the grouping
@@ -176,8 +178,7 @@ fi
 # **************** END NEW ************************************************************************************************************************************************
 
 #Launch ncPRO analysis
-
-echo $COMMAND_LINE
+echo $COMMAND_LINE >> $DEBUG
 
 /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG
 
@@ -185,7 +186,6 @@ echo $COMMAND_LINE
 
 RG=`samtools view  ${OUTPUT_PATH}/bowtie_results/input.bam | awk --posix 'BEGIN {RG=1} { if ($1 !~ /^[0-9]{1,}_[0-9]{1,}$/) {RG=0 ; exit} } END { print RG}'`
 echo " RG after pre-processing = $RG" >> $DEBUG
-echo " RG after pre-processing = $RG"
 #**** TEST
 
 
@@ -195,18 +195,18 @@ mv ${OUTPUT_PATH}/pipeline.log $LOG_FILE
 
 if [[ $NORM == "True" ]];then
     if [[ $DATATYPE == "matmir" ]];then
-        if [[ -z "$OUT_ALL" ]];then
+        if [[ ! -z "$OUT_ALL" ]];then
             mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM_all_miRNA.data $OUT_ALL
-	        mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
-	    else
-	    	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+            mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+	else
+            mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
         fi
     elif [[ $DATATYPE == "premir" ]];then
-        if [[ -z "$OUT_ALL" ]];then
+        if [[ ! -z "$OUT_ALL" ]];then
             mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM_all_miRNA.data $OUT_ALL
-	        mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
-	    else
-	    	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
+        else
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
         fi
     elif [[ $DATATYPE == "trna" ]];then
 	mv $OUTPUT_PATH/doc/tRNA_${EXT}_all_samples_subfamcov_RPM.data $OUT
@@ -217,18 +217,18 @@ if [[ $NORM == "True" ]];then
     fi
 else
     if [[ $DATATYPE == "matmir" ]];then
-        if [[ -z "$OUT_ALL" ]];then
+        if [[ ! -z "$OUT_ALL" ]];then
             mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov_all_miRNA.data $OUT_ALL
-	        mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
-	    else
-	    	mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+	    mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        else
+            mv $OUTPUT_PATH/doc/mature_miRNA_${EXT}_all_samples_subfamcov.data $OUT
         fi
     elif [[ $DATATYPE == "premir" ]];then
-        if [[ -z "$OUT_ALL" ]];then
+        if [[ ! -z "$OUT_ALL" ]];then
             mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov_all_miRNA.data $OUT_ALL
-	        mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
-	    else
-	    	mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
+        else
+            mv $OUTPUT_PATH/doc/precursor_miRNA_${EXT}_all_samples_subfamcov.data $OUT
         fi
     elif [[ $DATATYPE == "trna" ]];then
 	mv $OUTPUT_PATH/doc/tRNA_${EXT}_all_samples_subfamcov.data $OUT
@@ -250,60 +250,4 @@ fi
 # ***** END FOR NEBULA ONLY *****
 
 rm -rf $OUTPUT_PATH
-
-:<<'galaxy'
-
-#    if [[ $NORM == "True" ]];then
-#	ls -l $OUTPUT_PATH/ucsc/ | grep RPM | awk '{print $9}' > $OUTPUT_PATH/ucsc/bedGraph.gz.list
-#    else
-	ls -l $OUTPUT_PATH/ucsc/ | grep .bedGraph.gz | awk '{print $9}' > $OUTPUT_PATH/ucsc/bedGraph.gz.list
-#    fi
-	while read line
-	do
-	    if [[ $line != "" ]];then
-		EXT=`echo ${line#*.}`
-		if [[ $EXT == "bedGraph.gz" ]];then
-		    OUT_NAME=`basename $line .gz | sed -e 's/\+/p/g' | sed -e 's/\-/m/g'`
-		    zcat $OUTPUT_PATH/ucsc/$line > $OUTPUT_PATH/ucsc/$OUT_NAME
-		fi
-	    fi
-	done < $OUTPUT_PATH/ucsc/bedGraph.gz.list
-
-	#rm $OUTPUT_PATH/ucsc/bedGraph.gz.list
-
-#	if [[ $NORM == "True" ]];then
-#	    ls -l $OUTPUT_PATH/ucsc/ | grep RPM | awk '{print $9}' > $OUTPUT_PATH/ucsc/bedGraph.list
-#	else
-	    ls -l $OUTPUT_PATH/ucsc/ | grep .bedGraph | awk '{print $9}' > $OUTPUT_PATH/ucsc/bedGraph.list
-#	fi
-	echo "<p align=center><img src=html/images/ncPRO_logo.png /></p>" > $UCSC_TRACK
-	echo "<p align=center>To visualize IGV tracks, first start IGV on your computer, then clic on links below:</p>" >> $UCSC_TRACK
-
-	while read line
-	do
-	    if [[ $line != "" ]];then
-		EXT=`echo ${line#*.}`
-		if [[ $EXT == "bedGraph" || $EXT == "bed" ]];then
-		    line_url=$line #`echo $line | sed 's/+/%2b/g'`
-		    HTTP_PATH=`echo $OUTPUT_PATH | sed "s/\/data\/kdi_${VERSION}/http:\/\/data-kdi-${VERSION}.curie.fr\/file/g"` #this crazy thing means: replace "/data/kdi_VERSION/http" BY "/data-kdi-VERSION.curie.fr/file"
-		    echo "<p align=center><a href='http://localhost:60151/load?file=$HTTP_PATH/ucsc/$line_url&genome=$GENOME&merge=true' target='_blank'>$line</a></p>" >> $UCSC_TRACK
-		fi
-	    fi
-	done < $OUTPUT_PATH/ucsc/bedGraph.list
-
-	#rm $OUTPUT_PATH/ucsc/bedGraph.list
-fi
-
-
-galaxy
-
-
-
-
-
-
-
-
-
-
 
