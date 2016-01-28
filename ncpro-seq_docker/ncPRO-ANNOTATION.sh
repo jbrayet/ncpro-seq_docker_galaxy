@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Copyleft ↄ⃝ 2012 Institut Curie
+# Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
+# Contact: bioinfo.ncproseq@curie.fr
+# This software is distributed without any guarantee under the terms of the GNU General
+# Public License, either Version 2, June 1991 or Version 3, June 2007.
+
 while getopts "i:g:t:e:l:u:v:o:a::n:r:p:" optionName; do
 case "$optionName" in
 

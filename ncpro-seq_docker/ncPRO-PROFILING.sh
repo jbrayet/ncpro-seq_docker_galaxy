@@ -1,15 +1,17 @@
 #!/bin/bash
 
+# Copyleft ↄ⃝ 2012 Institut Curie
+# Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
+# Contact: bioinfo.ncproseq@curie.fr
+# This software is distributed without any guarantee under the terms of the GNU General
+# Public License, either Version 2, June 1991 or Version 3, June 2007.
 
-# here GROUP_READ = 1 ===> two types of profiling graph (abundant and distinct)
-
-while getopts "i:g:t:d:e:l:o:p:r:" optionName; do
+while getopts "i:g:t:e:l:o:p:r:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
 g) GENOME="$OPTARG";;
 t) DATATYPE="$OPTARG";;
-d) DATABASE="$OPTARG";;
 e) EXT="$OPTARG";;
 l) LOG_FILE="$OPTARG";;
 o) OUT_AB="$OPTARG";;
@@ -75,8 +77,41 @@ ln -s $annotationPath annotation
 
 CONFIG_FILE=config-ncrna.txt
 
-sed -i "s/mm9/$GENOME/g" $CONFIG_FILE
+sed -i "s:^BOWTIE_GENOME_REFERENCE =.*$:BOWTIE_GENOME_REFERENCE = $GENOME_2:g" $CONFIG_FILE
+sed -i "s:^ORGANISM.*$:ORGANISM = $GENOME_2:g" $CONFIG_FILE
+
+sed -i "s:^N_CPU.*$:N_CPU = 4:g" $CONFIG_FILE  #****** Make sure this value matches universe.ini files
+sed -i "s:^PROJECT_NAME =.*$:PROJECT_NAME = $PROJECTNAME:g" $CONFIG_FILE
+
+
 #sed -i "s/LOGFILE = pipeline.log/LOGFILE = $LOG_FILE/g" $CONFIG_FILE
+
+if [[ -f "$annotationPath/$GENOME_2/cluster_pirna.gff" ]]
+then
+    ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/cluster_pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+else
+    if [[ -f "$annotationPath/$GENOME_2/pirna.gff" ]]
+    then
+        ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/pirna.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    else
+    ANNO_CATALOG="$annotationPath/$GENOME_2/precursor_miRNA.gff $annotationPath/$GENOME_2/rfam.gff $annotationPath/$GENOME_2/rmsk.gff $annotationPath/$GENOME_2/coding_gene.gff"
+    fi
+fi
+
+sed -i "s:^ANNO_CATALOG.*$:ANNO_CATALOG = $ANNO_CATALOG:g" $CONFIG_FILE
+
+####### Remove information in config-ncrna.txt file ###############
+
+sed -i "s:^MATURE_MIRNA =.*$:MATURE_MIRNA =:g" $CONFIG_FILE
+sed -i "s:^PRECURSOR_MIRNA =.*$:PRECURSOR_MIRNA =:g" $CONFIG_FILE
+sed -i "s:^TRNA_UCSC =.*$:TRNA_UCSC =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RFAM =.*$:NCRNA_RFAM =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RFAM_EX =.*$:NCRNA_RFAM_EX =:g" $CONFIG_FILE
+sed -i "s:^NCRNA_RMSK =.*$:NCRNA_RMSK =:g" $CONFIG_FILE 
+sed -i "s:^NCRNA_RMSK_EX =.*$:NCRNA_RMSK_EX =:g" $CONFIG_FILE 
+sed -i "s:^OTHER_NCRNA_GFF =.*$:OTHER_NCRNA_GFF =:g" $CONFIG_FILE 
+
+#######################################
 
 if [[ $DATATYPE == "matmir" ]];then
 
@@ -92,12 +127,10 @@ elif [[ $DATATYPE == "trna" ]];then
 
 elif [[ $DATATYPE == "rfam" ]];then
 
-#	sed -i "s/NCRNA_RFAM =/NCRNA_RFAM = $RFAM_DATABASE/g" $CONFIG_FILE
 	sed -i "s/NCRNA_RFAM_EX =/NCRNA_RFAM_EX = $EXT/g" $CONFIG_FILE
 
 elif [[ $DATATYPE == "rmsk" ]];then
 
-#	sed -i "s/NCRNA_RMSK =/NCRNA_RMSK = $RMSK_DATABASE/g" $CONFIG_FILE
 	sed -i "s/NCRNA_RMSK_EX =/NCRNA_RMSK_EX = $EXT/g" $CONFIG_FILE 
 
 elif [[ $DATATYPE == "other" ]];then
@@ -133,7 +166,7 @@ echo "cmd : $COMMAND_LINE" >> $DEBUG
 # **************** END NEW *******************************************************************************************************************************
 
 #Launch ncPRO analysis
-echo "cmd : /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE" >> $DEBUG
+echo $COMMAND_LINE >> $DEBUG
 /usr/curie_ngs/ncproseq_v1.6.5/bin/ncPRO-seq $COMMAND_LINE >> $DEBUG 2>&1
 
 #Galaxy output handling
@@ -145,7 +178,6 @@ mv ${OUTPUT_PATH}/pipeline.log $LOG_FILE
 
 if [ -f ${OUTPUT_PATH}/pic/input_*_${EXT}_abundant.png ] ; then
 	convert -resize 60% ${OUTPUT_PATH}/pic/input_*_${EXT}_abundant.png $OUT_AB
-	#mv ${OUTPUT_PATH}/pic/input_*_${EXT}_abundant.png $OUT_AB
 else
 	echo -e "Distribution of positional read coverage and the read length distribution are unavailable in this annotation family. Check the coverage profile table :\n" > $OUT_AB
 	cat ${OUTPUT_PATH}/doc/${DATATYPE}_${EXT}_all_samples_scaled_basecov_abundant_all_RPM.data >> $OUT_AB
@@ -153,7 +185,6 @@ fi
 
 if [ -f ${OUTPUT_PATH}/pic/input_*_${EXT}_distinct.png ]; then
 	convert -resize 60% ${OUTPUT_PATH}/pic/input_*_${EXT}_distinct.png $OUT_DIS
-	#mv ${OUTPUT_PATH}/pic/input_*_${EXT}_distinct.png $OUT_DIS
 
 else
 	echo "Distribution of positional read coverage and the read length distribution are unavailable in this annotation family. Check the coverage profile table :\n" > $OUT_DIS

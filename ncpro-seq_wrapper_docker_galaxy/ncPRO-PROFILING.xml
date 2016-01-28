@@ -7,7 +7,6 @@
   -i $input 
   -g $genome 
   -t $cond.datatype 
-  -d $cond['database']
   -e $cond['database']$cond['borne']$cond['N1']"_"$cond['N2']
   -l $outlog
   #if str($cond.datatype) == "matmir":
@@ -30,20 +29,6 @@
   -p $projectName
   </command>
   
-  <!-- 
-  DONE :
-  	- added possibility of mapping against : trna, ncrna from rfam, repeat from rmasker
-  	
-  TODO:
-  	- possibility of adding MORE than one sub-family
-  	- check famlies arragements in configfile !
- 
-
-  </command>
-  
-  
-  
-  -->
   <inputs>
     <param name="input" type="data" format="bam" label="Select your input file format" help="Aligned file (BAM) is required."/>
     <param name="genome" type="select" label="Select a reference genome" help="All the samples have to belong to the same species."> <!-- values should be the same as annotation files names, this value goes to ORGANISM in config file-->
@@ -95,9 +80,8 @@
 
 
 	    <when value="matmir">
-	      <param name="database" type="select">
-			<option value="miRNA">miRNA</option>
-	      </param>
+			<param name="database" type="hidden" value="miRNA" />
+
 	      
 <!-- mature mi RNA : NO repeats in annotation !-->
 
@@ -120,9 +104,8 @@
 
 <!-- PRE miRNA : NO repeats in annotation  -->	    
 	    <when value="premir">
-	      <param name="database" type="select">
-				<option value="miRNA">miRNA</option>
-	      </param>
+			<param name="database" type="hidden" value="miRNA" />
+
 	    
 		<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
 					<option value="_e_">Extend the annotation</option>
@@ -142,9 +125,8 @@
 	    
 <!-- TRNA : NO repeats in annotation  -->	    	    
 	    <when value="trna">
-	      <param name="database" type="select">
-		<option value="tRNA">tRNA</option>
-	     </param>
+			<param name="database" type="hidden" value="tRNA" />
+
 			<param name="borne" type="select" label="Method" help="Only read alignments which have 100% overlap with annotations will be counted. Thus, it can be interesing to modified the coordinates of genomic annotation according to your biological question.">
 					<option value="_e_">Extend the annotation</option>
 					<option value="_i_">Shorten the annotation</option>
@@ -516,18 +498,6 @@
 	   	</when>
     </conditional>
 
-
-   <!-- <param name="rpm" type="boolean" value="False" truevalue="True" falsevalue="False" label="Reads Per Million (RPM) normalization of reads counts" /> -->s
- 
-<!-- ### comment out kdi section  
-    <param name="kdi_file_name" type="text" size="20" label="File name (without extension)">
-      <validator type="empty_field" message="You must specify a File name" />
-    </param>
-    <param name="kdi_output_dir" type="text" size="13" label="Project number">
-      <validator type="empty_field" message="You must specify a Project number" />
-    </param>
--->
-
 </inputs>
 
 <outputs>
@@ -538,7 +508,6 @@
 	<filter>(str(cond['datatype']) == "matmir")</filter>
     </data>
     
-   
     <data format="png" name="out_premirna_ab" label="premiRNA profiling (abundant reads)">
 		<filter>(str(cond['datatype']) == "premir")</filter>
     </data>
@@ -559,8 +528,7 @@
    	<data format="png" name="out_rfam_dis" label="ncRNA profiling (distinct reads)">
 		<filter>(str(cond['datatype']) == "rfam")</filter>
     </data>
-   
-   
+    
     <data format="png" name="out_rmsk_ab" label="repeats profiling (abundant reads)">
 		<filter>(str(cond['datatype']) == "rmsk")</filter>
     </data>
@@ -580,6 +548,12 @@
 ncPRO-seq is a tool for annotation and profiling of ncRNAs from smallRNA sequencing data. It aims to interrogate and perform detailed analysis on small RNAs derived from annotated non-coding regions in miRBase, Rfam and repeatMasker, and regions defined by users. A command line version and an online version are available at http://ncpro.curie.fr.
 If you use the ncPRO-seq tool for your analysis, please cite the following paper :
 Chen C., Servant N., Toedling J., Sarazin A., Marchais A., Duvernois-Berthet E., Cognat V., Colot V., Voinnet O., Heard E., Ciaudo C. and Barillot E. (2012) ncPRO-seq: a tool for annotation and profiling analysis of ncRNAs from small RNA-seq.Bioinformatics.28(23):3147-9. 
+
+# Copyleft ↄ⃝ 2012 Institut Curie
+# Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
+# Contact: bioinfo.ncproseq@curie.fr
+# This software is distributed without any guarantee under the terms of the GNU General
+# Public License, either Version 2, June 1991 or Version 3, June 2007.
 
 ------
 

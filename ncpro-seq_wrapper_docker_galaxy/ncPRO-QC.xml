@@ -208,6 +208,12 @@ ncPRO-seq is a tool for annotation and profiling of ncRNAs from smallRNA sequenc
 If you use the ncPRO-seq tool for your analysis, please cite the following paper :
 Chen C., Servant N., Toedling J., Sarazin A., Marchais A., Duvernois-Berthet E., Cognat V., Colot V., Voinnet O., Heard E., Ciaudo C. and Barillot E. (2012) ncPRO-seq: a tool for annotation and profiling analysis of ncRNAs from small RNA-seq.Bioinformatics.28(23):3147-9. 
 
+# Copyleft ↄ⃝ 2012 Institut Curie
+# Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
+# Contact: bioinfo.ncproseq@curie.fr
+# This software is distributed without any guarantee under the terms of the GNU General
+# Public License, either Version 2, June 1991 or Version 3, June 2007.
+
 ------
 
 **Input Formats**

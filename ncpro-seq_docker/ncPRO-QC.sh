@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# I added the 'me' lines 
-#assumption : a user can't begin with a fastq  file already grouped !
+# Copyleft ↄ⃝ 2012 Institut Curie
+# Author(s): Jocelyn Brayet, Laurene Syx, Chongjian Chen, Nicolas Servant(Institut Curie) 2012 - 2015
+# Contact: bioinfo.ncproseq@curie.fr
+# This software is distributed without any guarantee under the terms of the GNU General
+# Public License, either Version 2, June 1991 or Version 3, June 2007.
 
 while getopts "i:s:n:g:m:o:f:r:h:p:l:t:a:q:d:" optionName; do
 case "$optionName" in
