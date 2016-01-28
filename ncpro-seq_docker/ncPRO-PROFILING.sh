@@ -6,7 +6,7 @@
 # This software is distributed without any guarantee under the terms of the GNU General
 # Public License, either Version 2, June 1991 or Version 3, June 2007.
 
-while getopts "i:g:t:e:l:o:p:r:" optionName; do
+while getopts "i:g:t:e:l:o:p:r:n:" optionName; do
 case "$optionName" in
 
 i) INPUT="$OPTARG";;
@@ -17,6 +17,7 @@ l) LOG_FILE="$OPTARG";;
 o) OUT_AB="$OPTARG";;
 p) OUT_DIS="$OPTARG";;
 r) ROOT_DIR="$OPTARG";;
+n) PROJECTNAME="$OPTARG";;
 
 esac
 done

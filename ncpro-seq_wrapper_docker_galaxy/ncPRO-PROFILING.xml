@@ -30,6 +30,11 @@
   </command>
   
   <inputs>
+    <param name="projectName" type="text" value="Project_1" size="20" label="Give a project name" >
+      <sanitizer invalid_char="">
+	    <valid initial="string.letters,string.digits"><add value="_"/></valid>	
+      </sanitizer>
+    </param>
     <param name="input" type="data" format="bam" label="Select your input file format" help="Aligned file (BAM) is required."/>
     <param name="genome" type="select" label="Select a reference genome" help="All the samples have to belong to the same species."> <!-- values should be the same as annotation files names, this value goes to ORGANISM in config file-->
         <option value="human_hg19">hg19</option>
