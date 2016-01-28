@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="docker_ncproseqgalaxy" version="0.1">
+        <install version="1.0">
+            <actions>
+                <action type="shell_command">docker pull institutcuriengsintegration/ncproseqgalaxy:1.0</action>
+            </actions>
+        </install>
+        <readme>
+
+        </readme>
+    </package>
+</tool_dependency>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="docker_ncproseqgalaxy" version="0.1">
+        <repository changeset_revision="17b749ed012d" name="docker_ncproseqgalaxy" owner="jbrayet" toolshed="https://testtoolshed.g2.bx.psu.edu" />
+    </package>
+</tool_dependency>
